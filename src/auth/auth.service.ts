@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { RegisterDto } from './dto';
+import { GoogleAuthDto, RegisterDto } from './dto';
 import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { LoginDto } from './dto/login.dto';
@@ -50,7 +50,6 @@ export class AuthService {
         data: {
           email: dto.email,
           password: hash,
-          username: dto.username,
           name: dto.name,
         },
       });
@@ -66,11 +65,27 @@ export class AuthService {
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          throw new ForbiddenException('Kredensial sudah digunakan');
+          throw new ForbiddenException('Email sudah digunakan');
         }
       }
       throw err;
     }
+  }
+
+  async loginOrRegisterGoogle(dto: GoogleAuthDto) {
+    let user = await this.prisma.user.findUnique({
+      where: { google_id: dto.googleId },
+    });
+
+    if (!user) {
+      user = await this.prisma.user.create({
+        data: { name: dto.name, email: dto.email, google_id: dto.googleId },
+      });
+    }
+
+    const token = await this.signToken(user.id, user.email);
+
+    return { user, token };
   }
 
   async signToken(userId: number, email: string) {

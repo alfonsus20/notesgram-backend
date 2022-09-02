@@ -29,5 +29,5 @@ jobs:
           script: |
             cd /home/alfonschandrawan/notesgram
             yarn install --frozen-lockfile
-            npx prisma migrate
+            npx prisma generate
             yarn build
