@@ -1,0 +1,32 @@
+name: Deploy Backend Production
+on:
+  push:
+    branches: [master]
+jobs:
+  web-deploy:
+    name: 🎉 Deploy Production
+    runs-on: ubuntu-latest
+        
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+
+      - name: Send files via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.SSH_USERNAME }} 
+            server: ${{ secrets.SSH_HOST }} 
+            ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
+            local_path: './*'
+            remote_path: '/home/alfonschandrawan/notesgram'
+      
+      - name: Run server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/alfonschandrawan/notesgram
+            npm install
+            
