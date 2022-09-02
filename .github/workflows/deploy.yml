@@ -28,5 +28,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/alfonschandrawan/notesgram
-            npm install
-            
+            yarn install --frozen-lockfile
+            yarn build
