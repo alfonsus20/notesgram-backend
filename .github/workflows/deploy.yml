@@ -1,10 +1,10 @@
-name: Deploy Backend Production
+name: Deploy Notesgram Backend
 on:
   push:
     branches: [master]
 jobs:
   web-deploy:
-    name: 🎉 Deploy Production
+    name: 🎉 Deploy Notesgram Backend
     runs-on: ubuntu-latest
         
     steps:
@@ -31,3 +31,4 @@ jobs:
             yarn install --frozen-lockfile
             npx prisma generate
             yarn build
+            pm2 restart notesgram
