@@ -10,7 +10,7 @@ import {
 import { AuthService } from './auth.service';
 import { GoogleAuthDto, RegisterDto } from './dto';
 import { LoginDto } from './dto/login.dto';
-import { GoogleGuard } from './guard/google.guard';
+import { GoogleGuard } from './guard';
 import { Request, Response } from 'express';
 
 @Controller('auth')
