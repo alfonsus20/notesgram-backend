@@ -38,7 +38,8 @@ model Post {
   updatedAt DateTime @updatedAt
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  Note      Note?
+
+  note Note?
 
   @@map("posts")
 }
@@ -50,9 +51,9 @@ model Note {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  post         Post           @relation(fields: [postId], references: [id])
-  postId       Int            @unique
-  NotePictures NotePictures[]
+  note_pictures NotePictures[]
+  post          Post           @relation(fields: [postId], references: [id])
+  postId        Int            @unique
 
   @@map("notes")
 }

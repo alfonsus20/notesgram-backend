@@ -6,7 +6,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { UseGuards } from '@nestjs/common/decorators';
+import { Get, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
@@ -17,6 +17,11 @@ import { PostService } from './post.service';
 @UseGuards(JwtGuard)
 export class PostController {
   constructor(private postService: PostService) {}
+
+  @Get()
+  getPost() {
+    return this.postService.getPosts();
+  }
 
   @Post()
   @UseInterceptors(AnyFilesInterceptor())
