@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CreatePostDto } from './dto';
@@ -15,7 +15,11 @@ export class PostService {
       include: { note: { include: { note_pictures: true } } },
     });
 
-    return { message: 'Sukses get semua post', data: posts };
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Sukses get semua post',
+      data: posts,
+    };
   }
 
   async createPost(
@@ -62,6 +66,15 @@ export class PostService {
       return newPost;
     });
 
-    return { message: 'Sukses upload post', data: post };
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Sukses upload post',
+      data: post,
+    };
+  }
+
+  async likePost(userId: number, postId: number) {
+    try {
+    } catch (error) {}
   }
 }

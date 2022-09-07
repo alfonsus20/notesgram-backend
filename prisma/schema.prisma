@@ -25,9 +25,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts      Post[]
-  followers  Follows[] @relation("followers")
-  followings Follows[] @relation("followings")
+  posts           Post[]
+  followers       Follows[]      @relation("followers")
+  followings      Follows[]      @relation("followings")
+  liked_posts     PostLikes[]    @relation("liked_posts")
+  commented_posts PostComments[] @relation("commented_posts")
+
+  PostComments PostComments[]
 
   @@map("users")
 }
@@ -41,7 +45,9 @@ model Post {
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
 
-  note Note?
+  note       Note?
+  likers     PostLikes[]    @relation("likers")
+  commenters PostComments[] @relation("commenters")
 
   @@map("posts")
 }
@@ -72,13 +78,41 @@ model NotePictures {
 }
 
 model Follows {
-  id          Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   followerId  Int
   followingId Int
+  createdAt   DateTime @default(now())
 
-  follower  User     @relation("followers", fields: [followerId], references: [id])
-  following User     @relation("followings", fields: [followingId], references: [id])
-  createdAt DateTime @default(now())
+  follower  User @relation("followers", fields: [followerId], references: [id])
+  following User @relation("followings", fields: [followingId], references: [id])
 
   @@map("follows")
+}
+
+model PostLikes {
+  id      Int @id @default(autoincrement())
+  likerId Int
+  postId  Int
+
+  liker User @relation("liked_posts", fields: [likerId], references: [id])
+  post  Post @relation("likers", fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("post_likes")
+}
+
+model PostComments {
+  id          Int @id @default(autoincrement())
+  commenterId Int
+  postId      Int
+
+  commenter User @relation("commented_posts", fields: [commenterId], references: [id])
+  post      Post @relation("commenters", fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+
+  @@map("post_comments")
 }

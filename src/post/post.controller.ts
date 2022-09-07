@@ -5,7 +5,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { Get, UseGuards } from '@nestjs/common/decorators';
+import { Get, Param, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
@@ -31,5 +31,10 @@ export class PostController {
     @Body() dto: CreatePostDto,
   ) {
     return this.postService.createPost(userId, files, dto);
+  }
+
+  @Get(':id/like')
+  likePost(@GetUser('id') userId: number, @Param('id') postId: number) {
+    return this.postService.likePost(userId, postId);
   }
 }

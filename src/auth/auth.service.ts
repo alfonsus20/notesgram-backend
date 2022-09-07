@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpCode,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { GoogleAuthDto, RegisterDto } from './dto';
 import * as argon from 'argon2';
@@ -15,6 +20,7 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
+  @HttpCode(HttpStatus.OK)
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findFirst({
       where: {
@@ -37,6 +43,7 @@ export class AuthService {
     const token = await this.signToken(user.id, user.email);
 
     return {
+      statusCode: HttpStatus.OK,
       message: 'Login berhasil',
       data: { user, token },
     };
@@ -59,6 +66,7 @@ export class AuthService {
       delete user.password;
 
       return {
+        statusCode: HttpStatus.CREATED,
         message: 'Pendaftaran berhasil',
         data: { user, token },
       };

@@ -6,6 +6,7 @@ import {
   UseGuards,
   Req,
   Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GoogleAuthDto, RegisterDto } from './dto';
@@ -39,6 +40,10 @@ export class AuthController {
 
     const data = await this.authService.loginOrRegisterGoogle(user);
 
-    res.json({ message: 'Berhasil masuk dengan google', data });
+    res.json({
+      message: 'Berhasil masuk dengan google',
+      statusCode: HttpStatus.OK,
+      data,
+    });
   }
 }
