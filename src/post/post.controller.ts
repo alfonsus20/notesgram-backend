@@ -10,7 +10,7 @@ import { Get, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
-import { CreatePostDto } from './dto/create-post.dto';
+import { CreatePostDto } from './dto';
 import { PostService } from './post.service';
 
 @Controller('post')

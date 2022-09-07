@@ -25,7 +25,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts Post[]
+  posts      Post[]
+  followers  Follows[] @relation("followers")
+  followings Follows[] @relation("followings")
 
   @@map("users")
 }
@@ -67,4 +69,16 @@ model NotePictures {
   noteId      Int
 
   @@map("note_pictures")
+}
+
+model Follows {
+  id          Int @id @default(autoincrement())
+  followerId  Int
+  followingId Int
+
+  follower  User     @relation("followers", fields: [followerId], references: [id])
+  following User     @relation("followings", fields: [followingId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@map("follows")
 }

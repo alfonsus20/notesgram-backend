@@ -50,4 +50,38 @@ export class UserService {
       throw err;
     }
   }
+
+  async followUser(followerId: number, followingId: number) {
+    if (followerId === followingId) {
+      throw new BadRequestException(
+        'Anda tidak bisa menfollow diri anda sendiri',
+      );
+    }
+
+    try {
+      const userToFollow = await this.prisma.user.findUnique({
+        where: { id: followingId },
+      });
+
+      if (!userToFollow) {
+        throw new BadRequestException(
+          'User yang ingin difollow tidak ditemukan',
+        );
+      }
+
+      const follow = await this.prisma.follows.findFirst({
+        where: { followerId, followingId },
+      });
+
+      if (follow) {
+        await this.prisma.follows.delete({ where: { id: follow.id } });
+        return { message: 'Berhasil unfollow', data: null };
+      }
+
+      await this.prisma.follows.create({ data: { followerId, followingId } });
+      return { message: 'Berhasil follow', data: null };
+    } catch (err) {
+      throw err;
+    }
+  }
 }

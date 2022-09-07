@@ -4,6 +4,7 @@ import { JwtGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { UserService } from './user.service';
 import { CreateUsernameDto } from './dto';
+import { Param } from '@nestjs/common/decorators';
 
 @Controller('user')
 @UseGuards(JwtGuard)
@@ -26,5 +27,13 @@ export class UserController {
     @Body() dto: CreateUsernameDto,
   ) {
     return this.userService.createUsername(userId, dto);
+  }
+
+  @Get(':id/follow')
+  followUser(
+    @GetUser('id') followerId: number,
+    @Param('id') followingId: number,
+  ) {
+    return this.userService.followUser(followerId, +followingId);
   }
 }
