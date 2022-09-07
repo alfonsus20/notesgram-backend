@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Post,
@@ -31,18 +30,6 @@ export class PostController {
     files: Array<Express.Multer.File>,
     @Body() dto: CreatePostDto,
   ) {
-    if (
-      files.some(
-        (file) => !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(file.originalname),
-      )
-    ) {
-      throw new BadRequestException('Error file type');
-    }
-
-    if (files.length < 2) {
-      throw new BadRequestException('File minimal 2');
-    }
-
     return this.postService.createPost(userId, files, dto);
   }
 }

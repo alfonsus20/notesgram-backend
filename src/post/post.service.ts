@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CreatePostDto } from './dto';
@@ -23,6 +23,18 @@ export class PostService {
     files: Array<Express.Multer.File>,
     dto: CreatePostDto,
   ) {
+    if (
+      files.some(
+        (file) => !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(file.originalname),
+      )
+    ) {
+      throw new BadRequestException('Error file type');
+    }
+
+    if (files.length < 2) {
+      throw new BadRequestException('File minimal 2');
+    }
+
     const post = await this.prisma.$transaction(async (prismaTransaction) => {
       const arrOfFileUploadPromise = files.map((file) =>
         this.storageService.upload(file),

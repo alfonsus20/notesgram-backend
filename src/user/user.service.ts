@@ -7,9 +7,30 @@ import { CreateUsernameDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  getMyProfile(user: User) {
+  async getMyProfile(user: User) {
     delete user.password;
-    return { message: 'Success get my profile', data: { ...user } };
+
+    const followersCount = await this.prisma.follows.count({
+      where: { followingId: user.id },
+    });
+
+    const followingsCount = await this.prisma.follows.count({
+      where: { followerId: user.id },
+    });
+
+    const postsCount = await this.prisma.post.count({
+      where: { userId: user.id },
+    });
+
+    return {
+      message: 'Success get my profile',
+      data: {
+        ...user,
+        followers_count: followersCount,
+        followings_count: followingsCount,
+        notes_count: postsCount,
+      },
+    };
   }
 
   async checkUsername(username: string) {
