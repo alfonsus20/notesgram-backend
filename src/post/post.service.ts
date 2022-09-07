@@ -1,4 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CreatePostDto } from './dto';
@@ -75,6 +80,35 @@ export class PostService {
 
   async likePost(userId: number, postId: number) {
     try {
-    } catch (error) {}
+      const postToLike = await this.prisma.post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!postToLike) {
+        throw new NotFoundException('Postingan tidak ditemukan');
+      }
+
+      const postlike = await this.prisma.postLikes.findFirst({
+        where: { likerId: userId, postId },
+      });
+
+      if (postlike) {
+        await this.prisma.postLikes.delete({ where: { id: postlike.id } });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Sukses dislike post',
+          data: null,
+        };
+      }
+
+      await this.prisma.postLikes.create({ data: { likerId: userId, postId } });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Sukses like post',
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

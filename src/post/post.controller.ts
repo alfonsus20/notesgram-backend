@@ -35,6 +35,6 @@ export class PostController {
 
   @Get(':id/like')
   likePost(@GetUser('id') userId: number, @Param('id') postId: number) {
-    return this.postService.likePost(userId, postId);
+    return this.postService.likePost(userId, +postId);
   }
 }

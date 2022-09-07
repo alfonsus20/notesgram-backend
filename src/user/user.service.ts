@@ -1,4 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUsernameDto } from './dto';
@@ -94,9 +99,7 @@ export class UserService {
       });
 
       if (!userToFollow) {
-        throw new BadRequestException(
-          'User yang ingin difollow tidak ditemukan',
-        );
+        throw new NotFoundException('User yang ingin difollow tidak ditemukan');
       }
 
       const follow = await this.prisma.follows.findFirst({
