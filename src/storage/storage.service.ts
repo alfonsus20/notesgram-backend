@@ -2,6 +2,7 @@ import { Storage } from '@google-cloud/storage';
 import { Bucket } from '@google-cloud/storage/build/src/bucket';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class StorageService extends Storage {
@@ -16,9 +17,10 @@ export class StorageService extends Storage {
 
   async upload(file: Express.Multer.File) {
     try {
-      const blob = this.storageBucket.file(file.originalname);
+      const newFileName = `${uuidv4()}-${file.originalname}`;
+      const blob = this.storageBucket.file(newFileName);
 
-      const url = await new Promise((resolve, reject) => {
+      const url = await new Promise<string>((resolve, reject) => {
         const blobStream = blob.createWriteStream({ resumable: false });
 
         blobStream.on('error', (e) => {

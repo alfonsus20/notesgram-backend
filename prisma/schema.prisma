@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -16,12 +17,53 @@ model User {
   email      String  @unique
   password   String?
   name       String
-  username   String?  @unique
+  username   String? @unique
   google_id  String? @unique
   avatar_url String?
+  coins      Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  posts Post[]
+
   @@map("users")
+}
+
+model Post {
+  id      Int    @id @default(autoincrement())
+  caption String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  Note      Note?
+
+  @@map("posts")
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  title     String
+  price     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post         Post           @relation(fields: [postId], references: [id])
+  postId       Int            @unique
+  NotePictures NotePictures[]
+
+  @@map("notes")
+}
+
+model NotePictures {
+  id          Int      @id @default(autoincrement())
+  picture_url String
+  note        Note     @relation(fields: [noteId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  noteId      Int
+
+  @@map("note_pictures")
 }
