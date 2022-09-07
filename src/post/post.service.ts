@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
-import { CreatePostDto } from './dto';
+import { CommentPostDto, CreatePostDto } from './dto';
 
 @Injectable()
 export class PostService {
@@ -106,6 +106,30 @@ export class PostService {
         statusCode: HttpStatus.OK,
         message: 'Sukses like post',
         data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async commentPost(userId: number, postId: number, dto: CommentPostDto) {
+    try {
+      const postToComment = await this.prisma.post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!postToComment) {
+        throw new NotFoundException('Postingan tidak ditemukan');
+      }
+
+      const comment = await this.prisma.postComments.create({
+        data: { commenterId: userId, postId, comment: dto.comment },
+      });
+
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Sukses mengirimkan komentar',
+        data: { ...comment },
       };
     } catch (error) {
       throw error;

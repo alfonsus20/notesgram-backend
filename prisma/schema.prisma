@@ -31,8 +31,6 @@ model User {
   liked_posts     PostLikes[]    @relation("liked_posts")
   commented_posts PostComments[] @relation("commented_posts")
 
-  PostComments PostComments[]
-
   @@map("users")
 }
 
@@ -103,16 +101,15 @@ model PostLikes {
 }
 
 model PostComments {
-  id          Int @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   commenterId Int
   postId      Int
+  comment     String
 
   commenter User @relation("commented_posts", fields: [commenterId], references: [id])
   post      Post @relation("commenters", fields: [postId], references: [id])
 
   createdAt DateTime @default(now())
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    Int?
 
   @@map("post_comments")
 }

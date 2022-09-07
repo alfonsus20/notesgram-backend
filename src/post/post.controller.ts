@@ -9,7 +9,7 @@ import { Get, Param, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
-import { CreatePostDto } from './dto';
+import { CommentPostDto, CreatePostDto } from './dto';
 import { PostService } from './post.service';
 
 @Controller('post')
@@ -34,7 +34,16 @@ export class PostController {
   }
 
   @Get(':id/like')
-  likePost(@GetUser('id') userId: number, @Param('id') postId: number) {
+  likePost(@GetUser('id') userId: number, @Param('id') postId: string) {
     return this.postService.likePost(userId, +postId);
+  }
+
+  @Post(':id/comment')
+  commentPost(
+    @GetUser('id') userId: number,
+    @Param('id') postId: string,
+    @Body() dto: CommentPostDto,
+  ) {
+    return this.postService.commentPost(userId, +postId, dto);
   }
 }
