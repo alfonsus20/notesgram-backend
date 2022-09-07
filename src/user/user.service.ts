@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUsernameDto } from './dto';
@@ -23,6 +23,7 @@ export class UserService {
     });
 
     return {
+      statusCode: HttpStatus.OK,
       message: 'Success get my profile',
       data: {
         ...user,
@@ -45,7 +46,11 @@ export class UserService {
         throw new BadRequestException('Username is already taken');
       }
 
-      return { message: 'Username is available', data: { is_available: true } };
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Username is available',
+        data: { is_available: true },
+      };
     } catch (err) {
       throw err;
     }
@@ -66,7 +71,11 @@ export class UserService {
         where: { id: userId },
       });
 
-      return { message: 'Username created', data: { username: user.username } };
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Username created',
+        data: { username: user.username },
+      };
     } catch (err) {
       throw err;
     }
@@ -100,7 +109,11 @@ export class UserService {
       }
 
       await this.prisma.follows.create({ data: { followerId, followingId } });
-      return { message: 'Berhasil follow', data: null };
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Berhasil follow',
+        data: null,
+      };
     } catch (err) {
       throw err;
     }
