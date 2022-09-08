@@ -108,7 +108,11 @@ export class UserService {
 
       if (follow) {
         await this.prisma.follows.delete({ where: { id: follow.id } });
-        return { message: 'Berhasil unfollow', data: null };
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Berhasil unfollow',
+          data: null,
+        };
       }
 
       await this.prisma.follows.create({ data: { followerId, followingId } });
