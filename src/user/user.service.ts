@@ -12,30 +12,22 @@ import { CreateUsernameDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getMyProfile(user: User) {
+  async getMyProfile(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        _count: {
+          select: { posts: true, followers: true, followings: true },
+        },
+      },
+    });
+
     delete user.password;
-
-    const followersCount = await this.prisma.follows.count({
-      where: { followingId: user.id },
-    });
-
-    const followingsCount = await this.prisma.follows.count({
-      where: { followerId: user.id },
-    });
-
-    const postsCount = await this.prisma.post.count({
-      where: { userId: user.id },
-    });
 
     return {
       statusCode: HttpStatus.OK,
       message: 'Success get my profile',
-      data: {
-        ...user,
-        followers_count: followersCount,
-        followings_count: followingsCount,
-        notes_count: postsCount,
-      },
+      data: user,
     };
   }
 

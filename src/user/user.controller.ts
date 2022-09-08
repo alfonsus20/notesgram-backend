@@ -12,8 +12,8 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('me/profile')
-  getMyProfile(@GetUser() user: User) {
-    return this.userService.getMyProfile(user);
+  getMyProfile(@GetUser('id') userId: number) {
+    return this.userService.getMyProfile(userId);
   }
 
   @Get('username/check')
