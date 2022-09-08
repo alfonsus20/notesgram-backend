@@ -22,6 +22,11 @@ export class PostController {
     return this.postService.getPosts();
   }
 
+  @Get('/following')
+  getFollowingUsersPosts(@GetUser('id') userId) {
+    return this.postService.getFollowingUsersPosts(userId);
+  }
+
   @Post()
   @UseInterceptors(AnyFilesInterceptor())
   createPost(

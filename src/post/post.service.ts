@@ -27,6 +27,34 @@ export class PostService {
     };
   }
 
+  async getFollowingUsersPosts(userId: number) {
+    const followingUsers = await this.prisma.user.findMany({
+      where: { followers: { some: { followerId: { equals: userId } } } },
+      select: {
+        id: true,
+      },
+    });
+
+    const followingUsersPosts = await this.prisma.post.findMany({
+      where: { userId: { in: followingUsers.map((user) => user.id) } },
+      select: {
+        id: true,
+        caption: true,
+        createdAt: true,
+        note: { include: { note_pictures: true } },
+        user: {
+          select: { id: true, name: true, username: true, avatar_url: true },
+        },
+      },
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: "Success get following users' posts",
+      data: followingUsersPosts,
+    };
+  }
+
   async createPost(
     userId: number,
     files: Array<Express.Multer.File>,
@@ -129,7 +157,7 @@ export class PostService {
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Sukses mengirimkan komentar',
-        data: { ...comment },
+        data: comment,
       };
     } catch (error) {
       throw error;
