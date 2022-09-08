@@ -43,8 +43,14 @@ export class PostService {
         createdAt: true,
         note: { include: { note_pictures: true } },
         user: {
-          select: { id: true, name: true, username: true, avatar_url: true },
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            avatar_url: true,
+          },
         },
+        _count: { select: { likers: true, commenters: true } },
       },
     });
 
