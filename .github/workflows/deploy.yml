@@ -15,13 +15,13 @@ jobs:
         # uses: SpicyPizza/create-envfile@v1.3
         run: |
           touch .env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} > .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} > .env
-          echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} > .env
-          echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} > .env
-          echo TRIPAY_API_KEY=${{ secrets.TRIPAY_API_KEY }} > .env
-          echo TRIPAY_PRIVATE_KEY=${{ secrets.TRIPAY_PRIVATE_KEY }} > .env
-          echo TRIPAY_ENDPOINT=${{ secrets.TRIPAY_ENDPOINT }} > .env
+          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} >> .env
+          echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
+          echo TRIPAY_API_KEY=${{ secrets.TRIPAY_API_KEY }} >> .env
+          echo TRIPAY_PRIVATE_KEY=${{ secrets.TRIPAY_PRIVATE_KEY }} >> .env
+          echo TRIPAY_ENDPOINT=${{ secrets.TRIPAY_ENDPOINT }} >> .env
           cat .env
 
       - name: 📁 Send files via SFTP
