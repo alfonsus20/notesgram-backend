@@ -23,7 +23,7 @@ jobs:
           envkey_TRIPAY_API_KEY: ${{ secrets.TRIPAY_API_KEY }}
           envkey_TRIPAY_PRIVATE_KEY: ${{ secrets.TRIPAY_PRIVATE_KEY }}
           envkey_TRIPAY_ENDPOINT: ${{ secrets.TRIPAY_ENDPOINT }}
-          directory : ../
+          directory : ../../
 
       - name: 📁 Send files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
