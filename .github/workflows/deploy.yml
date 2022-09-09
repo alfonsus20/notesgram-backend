@@ -12,7 +12,6 @@ jobs:
         uses: actions/checkout@v2
       
       - name: 🔐 Generate .env 
-        # uses: SpicyPizza/create-envfile@v1.3
         run: |
           touch .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
@@ -33,7 +32,16 @@ jobs:
             ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
             local_path: './*'
             remote_path: '/home/alfonschandrawan/notesgram'
-      
+
+      - name: 📁 Update env
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.SSH_USERNAME }} 
+            server: ${{ secrets.SSH_HOST }} 
+            ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
+            local_path: './.env'
+            remote_path: '/home/alfonschandrawan/notesgram'
+           
       - name: 🌟 Run server
         uses: appleboy/ssh-action@master
         with:
