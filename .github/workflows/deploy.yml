@@ -21,7 +21,6 @@ jobs:
           echo TRIPAY_API_KEY=${{ secrets.TRIPAY_API_KEY }} >> .env
           echo TRIPAY_PRIVATE_KEY=${{ secrets.TRIPAY_PRIVATE_KEY }} >> .env
           echo TRIPAY_ENDPOINT=${{ secrets.TRIPAY_ENDPOINT }} >> .env
-          echo TESTING=hello >> .env
           cat .env
 
       - name: 📁 Send files via SFTP
@@ -33,7 +32,7 @@ jobs:
             local_path: './*'
             remote_path: '/home/alfonschandrawan/notesgram'
 
-      - name: 📁 Update env
+      - name: 🔐 Update env
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
             username: ${{ secrets.SSH_USERNAME }} 
