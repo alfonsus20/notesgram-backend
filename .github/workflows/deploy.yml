@@ -10,19 +10,20 @@ jobs:
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v2
+        with:
+          clean: 'false'
       
       - name: 🔐 Generate .env 
-        # uses: SpicyPizza/create-envfile@v1.3
-        run: |
-          touch .env
-          echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} >> .env
-          echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
-          echo TRIPAY_API_KEY=${{ secrets.TRIPAY_API_KEY }} >> .env
-          echo TRIPAY_PRIVATE_KEY=${{ secrets.TRIPAY_PRIVATE_KEY }} >> .env
-          echo TRIPAY_ENDPOINT=${{ secrets.TRIPAY_ENDPOINT }} >> .env
-          cat .env
+        uses: SpicyPizza/create-envfile@v1.3
+        run:
+          envkey_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          envkey_STORAGE_BUCKET_NAME: ${{ secrets.STORAGE_BUCKET_NAME }}
+          envkey_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          envkey_TRIPAY_API_KEY: ${{ secrets.TRIPAY_API_KEY }}
+          envkey_TRIPAY_PRIVATE_KEY: ${{ secrets.TRIPAY_PRIVATE_KEY }}
+          envkey_TRIPAY_ENDPOINT: ${{ secrets.TRIPAY_ENDPOINT }}
+          directory : ../
 
       - name: 📁 Send files via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
