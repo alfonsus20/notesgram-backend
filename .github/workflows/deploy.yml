@@ -30,7 +30,7 @@ jobs:
             username: ${{ secrets.SSH_USERNAME }} 
             server: ${{ secrets.SSH_HOST }} 
             ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
-            local_path: './*'
+            local_path: './.env'
             remote_path: '/home/alfonschandrawan/notesgram'
       
       - name: 🌟 Run server
