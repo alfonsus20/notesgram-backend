@@ -26,6 +26,8 @@ export class PaymentService {
   async handleCallback(dto: PaymentCallbackDto) {
     let status = '';
 
+    console.log({ dto });
+
     if (dto.status === 'success') {
       status = PaymentStatus.SUCCESS;
     } else if (dto.status === 'processing') {
