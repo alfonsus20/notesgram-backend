@@ -13,7 +13,7 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post('callback')
-  paymentCallback(data: any) {
+  paymentCallback(@Body() data: any) {
     console.log({ callbackData: data });
   }
 
