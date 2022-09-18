@@ -25,11 +25,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  posts           Post[]
-  followers       Follows[]      @relation("followers")
-  followings      Follows[]      @relation("followings")
-  liked_posts     PostLikes[]    @relation("liked_posts")
-  commented_posts PostComments[] @relation("commented_posts")
+  posts             Post[]
+  followers         Follows[]           @relation("followers")
+  followings        Follows[]           @relation("followings")
+  liked_posts       PostLikes[]         @relation("liked_posts")
+  commented_posts   PostComments[]      @relation("commented_posts")
+  TopupTransactions TopupTransactions[]
 
   @@map("users")
 }
@@ -112,4 +113,19 @@ model PostComments {
   createdAt DateTime @default(now())
 
   @@map("post_comments")
+}
+
+model TopupTransactions {
+  id             String  @id @default(uuid())
+  userId         Int
+  amount         Int
+  payment_method String?
+  status         String
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("topup_transactions")
 }

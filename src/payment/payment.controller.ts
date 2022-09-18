@@ -12,8 +12,8 @@ export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
   @Post('callback')
-  paymentCallback(@Body() data: any) {
-    console.log({ callbackData: data });
+  async paymentCallback(@Body() dto: PaymentCallbackDto) {
+    this.paymentService.handleCallback(dto);
   }
 
   @UseGuards(JwtGuard)
