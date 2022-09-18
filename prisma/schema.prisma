@@ -62,7 +62,7 @@ model Note {
   note_pictures NotePictures[]
   post          Post            @relation(fields: [postId], references: [id])
   postId        Int             @unique
-  NotePurchases NotePurchases[]
+  purchases     NotePurchases[]
 
   @@map("notes")
 }

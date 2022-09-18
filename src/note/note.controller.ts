@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Get, Param } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
@@ -13,5 +13,15 @@ export class NoteController {
   @Post('purchase')
   purchaseNote(@GetUser() user: User, @Body() dto: PurchaseNoteDto) {
     return this.noteService.purchaseNote(user, dto);
+  }
+
+  @Get('my')
+  getMyNotes(@GetUser('id') userId: number) {
+    return this.noteService.getMyNotes(userId);
+  }
+
+  @Get(':id')
+  getNoteById(@Param('id') noteId: string) {
+    return this.noteService.getNoteById(+noteId);
   }
 }
