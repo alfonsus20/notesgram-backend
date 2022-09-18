@@ -38,7 +38,7 @@ export class PaymentService {
 
     const transaction = await this.prismaService.topupTransactions.update({
       where: { id: dto.partner_tx_id },
-      data: { status },
+      data: { status, payment_method: dto.payment_method },
     });
 
     console.log({ transaction });
