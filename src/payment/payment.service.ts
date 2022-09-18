@@ -24,7 +24,7 @@ export class PaymentService {
     };
   }
 
-  async handleCallback(dto: PaymentCallbackDto) {
+  async handleCallbackTopupCoin(dto: PaymentCallbackDto) {
     let status = '';
 
     if (dto.status === 'complete') {
@@ -89,7 +89,7 @@ export class PaymentService {
     return {
       message: 'Success create topup coin transaction',
       statusCode: HttpStatus.OK,
-      data: { payment: data },
+      data: { payment: data, ...transaction },
     };
   }
 }

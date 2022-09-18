@@ -31,6 +31,7 @@ model User {
   liked_posts       PostLikes[]         @relation("liked_posts")
   commented_posts   PostComments[]      @relation("commented_posts")
   TopupTransactions TopupTransactions[]
+  NotePurchases     NotePurchases[]
 
   @@map("users")
 }
@@ -59,8 +60,9 @@ model Note {
   updatedAt DateTime @updatedAt
 
   note_pictures NotePictures[]
-  post          Post           @relation(fields: [postId], references: [id])
-  postId        Int            @unique
+  post          Post            @relation(fields: [postId], references: [id])
+  postId        Int             @unique
+  NotePurchases NotePurchases[]
 
   @@map("notes")
 }
@@ -128,4 +130,18 @@ model TopupTransactions {
   updatedAt DateTime @updatedAt
 
   @@map("topup_transactions")
+}
+
+model NotePurchases {
+  id     Int @id @default(autoincrement())
+  userId Int
+  noteId Int
+
+  user User @relation(fields: [userId], references: [id])
+  note Note @relation(fields: [noteId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("note_purchases")
 }

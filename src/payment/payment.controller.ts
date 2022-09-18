@@ -13,7 +13,7 @@ export class PaymentController {
 
   @Post('callback')
   async paymentCallback(@Body() dto: PaymentCallbackDto) {
-    this.paymentService.handleCallback(dto);
+    this.paymentService.handleCallbackTopupCoin(dto);
   }
 
   @UseGuards(JwtGuard)
