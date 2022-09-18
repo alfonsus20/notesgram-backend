@@ -6,6 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PaymentCallbackDto } from './dto';
 import { TopupCoinDto } from './dto/topup-coin.dto';
 import { PaymentStatus } from './enum';
+
 @Injectable()
 export class PaymentService {
   private oyBaseURL: string;
@@ -26,17 +27,32 @@ export class PaymentService {
   async handleCallback(dto: PaymentCallbackDto) {
     let status = '';
 
-    console.log({ dto });
-
     if (dto.status === 'complete') {
       status = PaymentStatus.SUCCESS;
+
+      await this.prismaService.$transaction(async (prismaTrans) => {
+        const { user, amount } = await prismaTrans.topupTransactions.findUnique(
+          {
+            where: { id: dto.partner_tx_id },
+            select: { amount: true, user: true },
+          },
+        );
+
+        await prismaTrans.user.update({
+          where: { id: user.id },
+          data: { coins: user.coins + amount },
+        });
+      });
+      // kirim notif
     } else if (dto.status === 'waiting_payment') {
       status = PaymentStatus.WAITING;
+
+      // kirim notif
     } else {
       status = PaymentStatus.FAILED;
-    }
 
-    // kirim notif
+      // kirim notif
+    }
 
     const transaction = await this.prismaService.topupTransactions.update({
       where: { id: dto.partner_tx_id },
