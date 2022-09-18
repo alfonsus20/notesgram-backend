@@ -7,7 +7,6 @@ import { JwtGuard } from '../auth/guard';
 import { PaymentCallbackDto, TopupCoinDto } from './dto';
 import { PaymentService } from './payment.service';
 
-@UseGuards(JwtGuard)
 @Controller('payment')
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
@@ -17,6 +16,7 @@ export class PaymentController {
     console.log({ callbackData: data });
   }
 
+  @UseGuards(JwtGuard)
   @Post('topup-coin')
   topupCoin(@GetUser() user: User, @Body() dto: TopupCoinDto) {
     return this.paymentService.topupCoin(user, dto);
