@@ -28,9 +28,9 @@ export class PaymentService {
 
     console.log({ dto });
 
-    if (dto.status === 'success') {
+    if (dto.status === 'complete') {
       status = PaymentStatus.SUCCESS;
-    } else if (dto.status === 'processing') {
+    } else if (dto.status === 'waiting_payment') {
       status = PaymentStatus.WAITING;
     } else {
       status = PaymentStatus.FAILED;

@@ -15,7 +15,7 @@ export class PaymentCallbackDto {
   updated: Date;
   payment_method: string;
   email: string;
-  status: 'success' | 'failed' | 'processing';
+  status: 'complete' | 'failed' | 'waiting_payment';
   sender_bank: string;
   settlement_type: string;
 }
