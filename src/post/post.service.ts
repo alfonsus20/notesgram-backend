@@ -71,11 +71,19 @@ export class PostService {
         (file) => !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(file.originalname),
       )
     ) {
-      throw new BadRequestException('Error file type');
+      throw new BadRequestException('Error file type : Only images allowed');
     }
 
     if (files.length < 2) {
-      throw new BadRequestException('File minimal 2');
+      throw new BadRequestException('Minimum file amount is 2');
+    }
+
+    if (files.length >= 4 && files.length <= 10 && dto.price < 10000) {
+      throw new BadRequestException('Minimum price is 10000');
+    }
+
+    if (files.length > 10 && dto.price < 15000) {
+      throw new BadRequestException('Minimum price is 15000');
     }
 
     const post = await this.prisma.$transaction(async (prismaTransaction) => {

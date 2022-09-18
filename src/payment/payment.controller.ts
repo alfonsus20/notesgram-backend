@@ -1,31 +1,24 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { Body } from '@nestjs/common/decorators';
+import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators';
-import { PaymentCallbackDto } from './dto';
+import { JwtGuard } from '../auth/guard';
+import { PaymentCallbackDto, TopupCoinDto } from './dto';
 import { PaymentService } from './payment.service';
 
+@UseGuards(JwtGuard)
 @Controller('payment')
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-  @Get('instruction')
-  getPaymentInstruction(@Query('code') code: string) {
-    return this.paymentService.getPaymentInstruction(code);
-  }
-
-  @Get('channel')
-  getPaymentChannels() {
-    return this.paymentService.getPaymentChannels();
-  }
-
   @Post('callback')
-  paymentCallback(@Body() dto: PaymentCallbackDto) {
-    return this.paymentService.paymentCallback(dto);
+  paymentCallback(data: any) {
+    console.log({ callbackData: data });
   }
 
-  @Post('create')
-  createPayment(@GetUser() user: User) {
-    return this.paymentService.createPayment();
+  @Post('topup-coin')
+  topupCoin(@GetUser() user: User, @Body() dto: TopupCoinDto) {
+    return this.paymentService.topupCoin(user, dto);
   }
 }
