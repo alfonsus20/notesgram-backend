@@ -18,8 +18,8 @@ export class PostController {
   constructor(private postService: PostService) {}
 
   @Get()
-  getPost() {
-    return this.postService.getPosts();
+  getPost(@GetUser('id') userId: number) {
+    return this.postService.getPosts(userId);
   }
 
   @Get('/following')

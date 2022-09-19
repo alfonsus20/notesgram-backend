@@ -60,7 +60,23 @@ export class NoteService {
 
           const newPurchase = await prismaTrans.notePurchase.create({
             data: { userId: user.id, noteId: note.id, price: finalPrice },
-            include: { note: true },
+            include: {
+              note: {
+                include: {
+                  post: {
+                    include: {
+                      user: {
+                        select: {
+                          username: true,
+                          avatar_url: true,
+                          name: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           });
 
           return newPurchase;

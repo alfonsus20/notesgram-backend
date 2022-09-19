@@ -15,16 +15,42 @@ export class PostService {
     private prisma: PrismaService,
   ) {}
 
-  async getPosts() {
+  async getPosts(userId: number) {
     const posts = await this.prisma.post.findMany({
-      include: { note: { include: { note_pictures: true } } },
+      where: { userId: { not: userId } },
+      include: {
+        note: { include: { note_pictures: true } },
+        user: {
+          select: { id: true, username: true, name: true, avatar_url: true },
+        },
+      },
     });
+
+    const purchasedNoteIds = await this.getPurchasedNoteIds(userId);
+
+    const modifiedNotes = posts.map((post) => ({
+      ...post,
+      note: {
+        ...post.note,
+        is_purchased: purchasedNoteIds.includes(post.note.id),
+      },
+    }));
 
     return {
       statusCode: HttpStatus.OK,
       message: 'Sukses get semua post',
-      data: posts,
+      data: modifiedNotes,
     };
+  }
+
+  async getPurchasedNoteIds(userId: number) {
+    const purchasedNoteIds = (
+      await this.prisma.notePurchase.findMany({
+        where: { userId },
+        select: { noteId: true },
+      })
+    ).map((data) => data.noteId);
+    return purchasedNoteIds;
   }
 
   async getFollowingUsersPosts(userId: number) {
@@ -34,6 +60,8 @@ export class PostService {
         id: true,
       },
     });
+
+    const purchasedNoteIds = await this.getPurchasedNoteIds(userId);
 
     const followingUsersPosts = await this.prisma.post.findMany({
       where: { userId: { in: followingUsers.map((user) => user.id) } },
@@ -54,10 +82,18 @@ export class PostService {
       },
     });
 
+    const modifiedFollowingUsersPosts = followingUsersPosts.map((post) => ({
+      ...post,
+      note: {
+        ...post.note,
+        is_purchased: purchasedNoteIds.includes(post.note.id),
+      },
+    }));
+
     return {
       statusCode: HttpStatus.OK,
       message: "Success get following users' posts",
-      data: followingUsersPosts,
+      data: modifiedFollowingUsersPosts,
     };
   }
 

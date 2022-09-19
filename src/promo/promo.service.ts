@@ -30,7 +30,7 @@ export class PromoService {
 
       return {
         statusCode: HttpStatus.OK,
-        data: { is_valid: true },
+        data: { is_valid: true, promo },
         message: 'Promo is valid',
       };
     } catch (error) {
