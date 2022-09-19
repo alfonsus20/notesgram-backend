@@ -26,12 +26,12 @@ model User {
   updatedAt DateTime @updatedAt
 
   posts             Post[]
-  followers         Follows[]           @relation("followers")
-  followings        Follows[]           @relation("followings")
-  liked_posts       PostLikes[]         @relation("liked_posts")
-  commented_posts   PostComments[]      @relation("commented_posts")
-  TopupTransactions TopupTransactions[]
-  NotePurchases     NotePurchases[]
+  followers         Follow[]           @relation("followers")
+  followings        Follow[]           @relation("followings")
+  liked_posts       PostLike[]         @relation("liked_posts")
+  commented_posts   PostComment[]      @relation("commented_posts")
+  TopupTransactions TopupTransaction[]
+  NotePurchases     NotePurchase[]
 
   @@map("users")
 }
@@ -46,8 +46,8 @@ model Post {
   userId    Int
 
   note       Note?
-  likers     PostLikes[]    @relation("likers")
-  commenters PostComments[] @relation("commenters")
+  likers     PostLike[]    @relation("likers")
+  commenters PostComment[] @relation("commenters")
 
   @@map("posts")
 }
@@ -59,15 +59,15 @@ model Note {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  note_pictures NotePictures[]
+  note_pictures NotePicture[]
   post          Post            @relation(fields: [postId], references: [id])
   postId        Int             @unique
-  purchases     NotePurchases[]
+  purchases     NotePurchase[]
 
   @@map("notes")
 }
 
-model NotePictures {
+model NotePicture {
   id          Int      @id @default(autoincrement())
   picture_url String
   note        Note     @relation(fields: [noteId], references: [id])
@@ -78,7 +78,7 @@ model NotePictures {
   @@map("note_pictures")
 }
 
-model Follows {
+model Follow {
   id          Int      @id @default(autoincrement())
   followerId  Int
   followingId Int
@@ -90,7 +90,7 @@ model Follows {
   @@map("follows")
 }
 
-model PostLikes {
+model PostLike {
   id      Int @id @default(autoincrement())
   likerId Int
   postId  Int
@@ -103,7 +103,7 @@ model PostLikes {
   @@map("post_likes")
 }
 
-model PostComments {
+model PostComment {
   id          Int    @id @default(autoincrement())
   commenterId Int
   postId      Int
@@ -117,7 +117,7 @@ model PostComments {
   @@map("post_comments")
 }
 
-model TopupTransactions {
+model TopupTransaction {
   id             String  @id @default(uuid())
   userId         Int
   amount         Int
@@ -132,7 +132,7 @@ model TopupTransactions {
   @@map("topup_transactions")
 }
 
-model NotePurchases {
+model NotePurchase {
   id     Int @id @default(autoincrement())
   userId Int
   noteId Int
@@ -144,4 +144,16 @@ model NotePurchases {
   updatedAt DateTime @updatedAt
 
   @@map("note_purchases")
+}
+
+model PromoCode {
+  id       Int      @id @default(autoincrement())
+  code     String
+  discount Int
+  endAt    DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("promo_codes")
 }

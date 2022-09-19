@@ -93,12 +93,12 @@ export class UserService {
         throw new NotFoundException('User yang ingin difollow tidak ditemukan');
       }
 
-      const follow = await this.prisma.follows.findFirst({
+      const follow = await this.prisma.follow.findFirst({
         where: { followerId, followingId },
       });
 
       if (follow) {
-        await this.prisma.follows.delete({ where: { id: follow.id } });
+        await this.prisma.follow.delete({ where: { id: follow.id } });
         return {
           statusCode: HttpStatus.OK,
           message: 'Berhasil unfollow',
@@ -106,7 +106,7 @@ export class UserService {
         };
       }
 
-      await this.prisma.follows.create({ data: { followerId, followingId } });
+      await this.prisma.follow.create({ data: { followerId, followingId } });
       return {
         statusCode: HttpStatus.OK,
         message: 'Berhasil follow',

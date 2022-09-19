@@ -23,7 +23,7 @@ export class NoteService {
       }
 
       const isAlreadyPurchased =
-        await this.prismaService.notePurchases.findFirst({
+        await this.prismaService.notePurchase.findFirst({
           where: { userId: user.id, noteId: note.id },
         });
 
@@ -38,7 +38,7 @@ export class NoteService {
             data: { coins: user.coins - note.price },
           });
 
-          const newPurchase = await prismaTrans.notePurchases.create({
+          const newPurchase = await prismaTrans.notePurchase.create({
             data: { userId: user.id, noteId: note.id },
             include: { note: true },
           });

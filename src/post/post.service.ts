@@ -130,12 +130,12 @@ export class PostService {
         throw new NotFoundException('Postingan tidak ditemukan');
       }
 
-      const postlike = await this.prisma.postLikes.findFirst({
+      const postlike = await this.prisma.postLike.findFirst({
         where: { likerId: userId, postId },
       });
 
       if (postlike) {
-        await this.prisma.postLikes.delete({ where: { id: postlike.id } });
+        await this.prisma.postLike.delete({ where: { id: postlike.id } });
         return {
           statusCode: HttpStatus.OK,
           message: 'Sukses dislike post',
@@ -143,7 +143,7 @@ export class PostService {
         };
       }
 
-      await this.prisma.postLikes.create({ data: { likerId: userId, postId } });
+      await this.prisma.postLike.create({ data: { likerId: userId, postId } });
       return {
         statusCode: HttpStatus.OK,
         message: 'Sukses like post',
@@ -164,7 +164,7 @@ export class PostService {
         throw new NotFoundException('Postingan tidak ditemukan');
       }
 
-      const comment = await this.prisma.postComments.create({
+      const comment = await this.prisma.postComment.create({
         data: { commenterId: userId, postId, comment: dto.comment },
       });
 

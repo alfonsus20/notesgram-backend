@@ -31,12 +31,10 @@ export class PaymentService {
       status = PaymentStatus.SUCCESS;
 
       await this.prismaService.$transaction(async (prismaTrans) => {
-        const { user, amount } = await prismaTrans.topupTransactions.findUnique(
-          {
-            where: { id: dto.partner_tx_id },
-            select: { amount: true, user: true },
-          },
-        );
+        const { user, amount } = await prismaTrans.topupTransaction.findUnique({
+          where: { id: dto.partner_tx_id },
+          select: { amount: true, user: true },
+        });
 
         await prismaTrans.user.update({
           where: { id: user.id },
@@ -54,7 +52,7 @@ export class PaymentService {
       // kirim notif
     }
 
-    const transaction = await this.prismaService.topupTransactions.update({
+    const transaction = await this.prismaService.topupTransaction.update({
       where: { id: dto.partner_tx_id },
       data: { status, payment_method: dto.payment_method },
     });
@@ -63,7 +61,7 @@ export class PaymentService {
   }
 
   async topupCoin(user: User, dto: TopupCoinDto) {
-    const transaction = await this.prismaService.topupTransactions.create({
+    const transaction = await this.prismaService.topupTransaction.create({
       data: {
         amount: dto.amount,
         userId: user.id,
