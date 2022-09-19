@@ -94,6 +94,42 @@ export class NoteService {
     }
   }
 
+  async getMyPurchasedNotes(userId: number) {
+    try {
+      const purchasedNoteIds = await this.prismaService.notePurchase.findMany({
+        where: { userId },
+        select: { noteId: true },
+      });
+
+      const purchasedNotes = await this.prismaService.note.findMany({
+        where: { id: { in: purchasedNoteIds.map((data) => data.noteId) } },
+        include: {
+          note_pictures: true,
+          post: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  avatar_url: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success get my purchased notes',
+        data: purchasedNotes,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getNoteById(noteId: number) {
     try {
       const notes = await this.prismaService.note.findUnique({

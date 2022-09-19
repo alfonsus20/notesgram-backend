@@ -20,6 +20,11 @@ export class NoteController {
     return this.noteService.getMyNotes(userId);
   }
 
+  @Get('my/purchased')
+  getMyPurchasedNotes(@GetUser('id') userId: number) {
+    return this.noteService.getMyPurchasedNotes(userId);
+  }
+
   @Get(':id')
   getNoteById(@Param('id') noteId: string) {
     return this.noteService.getNoteById(+noteId);
