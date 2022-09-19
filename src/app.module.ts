@@ -9,6 +9,9 @@ import { StorageModule } from './storage/storage.module';
 import { UserModule } from './user/user.module';
 import { PaymentModule } from './payment/payment.module';
 import { NoteModule } from './note/note.module';
+import { PromoController } from './promo/promo.controller';
+import { PromoService } from './promo/promo.service';
+import { PromoModule } from './promo/promo.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,8 +22,9 @@ import { NoteModule } from './note/note.module';
     UserModule,
     PaymentModule,
     NoteModule,
+    PromoModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, PromoController],
+  providers: [AppService, PromoService],
 })
 export class AppModule {}
