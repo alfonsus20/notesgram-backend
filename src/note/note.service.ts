@@ -31,15 +31,35 @@ export class NoteService {
         throw new BadRequestException('Note has already been purchased');
       }
 
+      let discount = 0;
+
+      if (dto.promo_code) {
+        const promo = await this.prismaService.promoCode.findUnique({
+          where: { code: dto.promo_code },
+        });
+
+        if (!promo) {
+          throw new NotFoundException('Promo code not found');
+        }
+
+        if (new Date() > new Date(promo.endAt)) {
+          throw new BadRequestException('Promo code has expired');
+        }
+
+        discount = promo.discount;
+      }
+
       const purchase = await this.prismaService.$transaction(
         async (prismaTrans) => {
+          const finalPrice = note.price * ((100 - discount) / 100);
+
           await prismaTrans.user.update({
             where: { id: user.id },
-            data: { coins: user.coins - note.price },
+            data: { coins: user.coins - finalPrice },
           });
 
           const newPurchase = await prismaTrans.notePurchase.create({
-            data: { userId: user.id, noteId: note.id },
+            data: { userId: user.id, noteId: note.id, price: finalPrice },
             include: { note: true },
           });
 

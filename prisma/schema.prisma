@@ -22,8 +22,8 @@ model User {
   avatar_url String?
   coins      Int     @default(0)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   posts             Post[]
   followers         Follow[]           @relation("followers")
@@ -40,8 +40,8 @@ model Post {
   id      Int    @id @default(autoincrement())
   caption String
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
 
@@ -56,12 +56,12 @@ model Note {
   id        Int      @id @default(autoincrement())
   title     String
   price     Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   note_pictures NotePicture[]
-  post          Post            @relation(fields: [postId], references: [id])
-  postId        Int             @unique
+  post          Post           @relation(fields: [postId], references: [id])
+  postId        Int            @unique
   purchases     NotePurchase[]
 
   @@map("notes")
@@ -71,8 +71,8 @@ model NotePicture {
   id          Int      @id @default(autoincrement())
   picture_url String
   note        Note     @relation(fields: [noteId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
   noteId      Int
 
   @@map("note_pictures")
@@ -82,7 +82,7 @@ model Follow {
   id          Int      @id @default(autoincrement())
   followerId  Int
   followingId Int
-  createdAt   DateTime @default(now())
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
 
   follower  User @relation("followings", fields: [followerId], references: [id])
   following User @relation("followers", fields: [followingId], references: [id])
@@ -98,7 +98,7 @@ model PostLike {
   liker User @relation("liked_posts", fields: [likerId], references: [id])
   post  Post @relation("likers", fields: [postId], references: [id])
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 
   @@map("post_likes")
 }
@@ -112,7 +112,7 @@ model PostComment {
   commenter User @relation("commented_posts", fields: [commenterId], references: [id])
   post      Post @relation("commenters", fields: [postId], references: [id])
 
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 
   @@map("post_comments")
 }
@@ -126,8 +126,8 @@ model TopupTransaction {
 
   user User @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@map("topup_transactions")
 }
@@ -136,24 +136,25 @@ model NotePurchase {
   id     Int @id @default(autoincrement())
   userId Int
   noteId Int
+  price  Int
 
   user User @relation(fields: [userId], references: [id])
   note Note @relation(fields: [noteId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@map("note_purchases")
 }
 
 model PromoCode {
   id       Int      @id @default(autoincrement())
-  code     String
+  code     String   @unique
   discount Int
-  endAt    DateTime
+  endAt    DateTime @db.Timestamptz(3)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 
   @@map("promo_codes")
 }
