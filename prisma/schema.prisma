@@ -126,6 +126,7 @@ model TopupTransaction {
   amount         Int
   payment_method String?
   status         String
+  admin_fee      Int
 
   user User @relation(fields: [userId], references: [id])
 
@@ -182,6 +183,7 @@ model WithdrawalTransaction {
   bank_code      String
   account_number Int
   status         String
+  admin_fee      Int
 
   user User @relation(fields: [userId], references: [id])
 

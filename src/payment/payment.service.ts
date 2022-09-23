@@ -66,14 +66,17 @@ export class PaymentService {
         amount: dto.amount,
         userId: user.id,
         status: PaymentStatus.WAITING,
+        admin_fee: 500,
       },
     });
+
+    const fixedAmount = dto.amount + 500;
 
     const { data } = await this.httpService.axiosRef.post(
       `${this.oyBaseURL}/payment-checkout/create-v2`,
       {
         sender_name: user.name,
-        amount: dto.amount,
+        amount: fixedAmount,
         email: user.email,
         is_open: false,
         include_admin_fee: true,
@@ -93,29 +96,42 @@ export class PaymentService {
 
   async withDrawMoney(user: User, dto: WithdrawDto) {
     try {
-      const transaction = await this.prismaService.withdrawalTransaction.create(
-        {
-          data: {
-            amount: dto.amount,
-            userId: user.id,
-            status: WithdrawalStatus.PROCESSING,
-            account_number: dto.account_number,
-            bank_code: dto.bank_code,
-          },
-        },
-      );
+      const { data, transaction } = await this.prismaService.$transaction(
+        async (prismaTrans) => {
+          const transaction = await prismaTrans.withdrawalTransaction.create({
+            data: {
+              amount: dto.amount,
+              userId: user.id,
+              status: WithdrawalStatus.PROCESSING,
+              account_number: dto.account_number,
+              bank_code: dto.bank_code,
+              admin_fee: 500,
+            },
+          });
 
-      const { data } = await this.httpService.axiosRef.post(
-        `${this.oyBaseURL}/remit`,
-        {
-          sender_name: user.name,
-          amount: dto.amount,
-          email: user.email,
-          partner_trx_id: transaction.id,
-          recipient_bank: dto.bank_code,
-          recipient_account: dto.account_number,
+          await prismaTrans.user.update({
+            where: { id: user.id },
+            data: { coins: user.coins - dto.amount - 500 },
+          });
+
+          // Minus admin fee
+          const fixedAmount = dto.amount - 500;
+
+          const { data } = await this.httpService.axiosRef.post(
+            `${this.oyBaseURL}/remit`,
+            {
+              sender_name: user.name,
+              amount: fixedAmount,
+              email: user.email,
+              partner_trx_id: transaction.id,
+              recipient_bank: dto.bank_code,
+              recipient_account: dto.account_number,
+            },
+            { headers: this.headers },
+          );
+
+          return { data, transaction };
         },
-        { headers: this.headers },
       );
 
       return {
@@ -129,7 +145,23 @@ export class PaymentService {
   }
 
   async handleCallbackWithdrawal(dto: WithdrawCallbackDto) {
-    const status = '';
-    console.log({ withdrawDto: dto });
+    let status = '';
+
+    if (dto.status.code === '000') {
+      status = WithdrawalStatus.SUCCESS;
+      // kirim notif
+    } else {
+      status = WithdrawalStatus.FAILED;
+      // kirim notif
+    }
+
+    const transaction = await this.prismaService.withdrawalTransaction.update({
+      where: { id: dto.partner_trx_id },
+      data: {
+        status,
+      },
+    });
+
+    console.log({ transaction });
   }
 }
