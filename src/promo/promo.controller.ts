@@ -7,8 +7,12 @@ import { JwtGuard } from '../auth/guard';
 @Controller('promo')
 export class PromoController {
   constructor(private promoService: PromoService) {}
-
   @Get()
+  getAllPromoCodes() {
+    return this.promoService.getAllPromoCodes();
+  }
+
+  @Get('validate')
   validatePromoCode(@Query('code') code: string) {
     return this.promoService.validatePromoCode(code);
   }

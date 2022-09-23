@@ -10,6 +10,22 @@ import { PrismaService } from '../prisma/prisma.service';
 export class PromoService {
   constructor(private prismaService: PrismaService) {}
 
+  async getAllPromoCodes() {
+    try {
+      const promoCodes = await this.prismaService.promoCode.findMany({
+        where: { endAt: { gt: new Date() } },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success get available promo code',
+        data: promoCodes,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async validatePromoCode(code: string) {
     if (!code) {
       throw new BadRequestException('Promo code is required');
