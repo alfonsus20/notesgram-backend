@@ -5,7 +5,7 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { Get, Param, UseGuards } from '@nestjs/common/decorators';
+import { Get, Param, Query, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
@@ -50,5 +50,14 @@ export class PostController {
     @Body() dto: CommentPostDto,
   ) {
     return this.postService.commentPost(userId, +postId, dto);
+  }
+
+  @Get('explore')
+  explorePost(
+    @Query('note_title') noteTitle: string,
+    @Query('username') username: string,
+    @Query('author_name') authorName: string,
+  ) {
+    return this.postService.explorePost(noteTitle, username, authorName);
   }
 }

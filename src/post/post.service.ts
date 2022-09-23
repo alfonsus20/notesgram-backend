@@ -25,6 +25,7 @@ export class PostService {
         user: {
           select: { id: true, username: true, name: true, avatar_url: true },
         },
+        likers: { select: { likerId: true } },
       },
     });
 
@@ -44,11 +45,12 @@ export class PostService {
         ...post.user,
         is_followed: followingUserIds.includes(post.user.id),
       },
+      is_liked: post.likers.map((liker) => liker.likerId).includes(userId),
     }));
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Sukses get semua post',
+      message: 'Sukses get all post',
       data: modifiedNotes,
     };
   }
@@ -218,6 +220,32 @@ export class PostService {
         statusCode: HttpStatus.CREATED,
         message: 'Sukses mengirimkan komentar',
         data: comment,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async explorePost(noteTitle = '', username = '', authorName = '') {
+    try {
+      const notes = await this.prisma.note.findMany({
+        where: { title: { contains: noteTitle, mode: 'insensitive' } },
+      });
+
+      const users = await this.prisma.user.findMany({
+        where: {
+          OR: [
+            { name: { contains: authorName, mode: 'insensitive' } },
+            { username: { contains: username, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true, username: true, name: true, avatar_url: true },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success explore post',
+        data: { notes, users },
       };
     } catch (error) {
       throw error;
