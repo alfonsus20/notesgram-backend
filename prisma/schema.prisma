@@ -25,14 +25,15 @@ model User {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
-  posts             Post[]
-  followers         Follow[]           @relation("followers")
-  followings        Follow[]           @relation("followings")
-  liked_posts       PostLike[]         @relation("liked_posts")
-  commented_posts   PostComment[]      @relation("commented_posts")
-  TopupTransactions TopupTransaction[]
-  NotePurchases     NotePurchase[]
-  bookmarked_posts  PostBookmark[]     @relation("bookmarked_posts")
+  posts                 Post[]
+  followers             Follow[]                @relation("followers")
+  followings            Follow[]                @relation("followings")
+  liked_posts           PostLike[]              @relation("liked_posts")
+  commented_posts       PostComment[]           @relation("commented_posts")
+  TopupTransactions     TopupTransaction[]
+  NotePurchases         NotePurchase[]
+  bookmarked_posts      PostBookmark[]          @relation("bookmarked_posts")
+  WithdrawalTransaction WithdrawalTransaction[]
 
   @@map("users")
 }
@@ -170,6 +171,22 @@ model PostBookmark {
   post       Post @relation("bookmarks", fields: [postId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
-  
+
   @@map("post_bookmarks")
+}
+
+model WithdrawalTransaction {
+  id             String @id @default(uuid())
+  userId         Int
+  amount         Int
+  bank_code      String
+  account_number Int
+  status         String
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("withdrawal_transactions")
 }

@@ -3,9 +3,9 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { PaymentCallbackDto } from './dto';
+import { PaymentCallbackDto, WithdrawCallbackDto, WithdrawDto } from './dto';
 import { TopupCoinDto } from './dto/topup-coin.dto';
-import { PaymentStatus } from './enum';
+import { PaymentStatus, WithdrawalStatus } from './enum';
 
 @Injectable()
 export class PaymentService {
@@ -89,5 +89,47 @@ export class PaymentService {
       statusCode: HttpStatus.OK,
       data: { payment: data, ...transaction },
     };
+  }
+
+  async withDrawMoney(user: User, dto: WithdrawDto) {
+    try {
+      const transaction = await this.prismaService.withdrawalTransaction.create(
+        {
+          data: {
+            amount: dto.amount,
+            userId: user.id,
+            status: WithdrawalStatus.PROCESSING,
+            account_number: dto.account_number,
+            bank_code: dto.bank_code,
+          },
+        },
+      );
+
+      const { data } = await this.httpService.axiosRef.post(
+        `${this.oyBaseURL}/remit`,
+        {
+          sender_name: user.name,
+          amount: dto.amount,
+          email: user.email,
+          partner_trx_id: transaction.id,
+          recipient_bank: dto.bank_code,
+          recipient_account: dto.account_number,
+        },
+        { headers: this.headers },
+      );
+
+      return {
+        message: 'Success create withdrawal transaction',
+        statusCode: HttpStatus.OK,
+        data: { withdrawal: data, ...transaction },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async handleCallbackWithdrawal(dto: WithdrawCallbackDto) {
+    const status = '';
+    console.log({ withdrawDto: dto });
   }
 }

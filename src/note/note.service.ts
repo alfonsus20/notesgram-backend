@@ -18,9 +18,7 @@ export class NoteService {
         throw new NotFoundException('Note is not found');
       }
 
-      const totalAfterAdminFee = note.price + 500;
-
-      if (user.coins < totalAfterAdminFee) {
+      if (user.coins < note.price) {
         throw new BadRequestException('Your balance is not sufficient');
       }
 
@@ -53,7 +51,7 @@ export class NoteService {
 
       const purchase = await this.prismaService.$transaction(
         async (prismaTrans) => {
-          const finalPrice = totalAfterAdminFee - note.price * (discount / 100);
+          const finalPrice = note.price * ((100 - discount) / 100);
 
           await prismaTrans.user.update({
             where: { id: user.id },
