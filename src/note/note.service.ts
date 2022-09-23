@@ -146,10 +146,24 @@ export class NoteService {
                   name: true,
                 },
               },
-              _count: {
-                select: { likers: true, commenters: true },
+              comments: {
+                select: {
+                  id: true,
+                  comment: true,
+                  commenter: {
+                    select: {
+                      id: true,
+                      name: true,
+                      username: true,
+                      avatar_url: true,
+                    },
+                  },
+                },
               },
-              likers: true,
+              _count: {
+                select: { likes: true, comments: true },
+              },
+              likes: true,
             },
           },
           note_pictures: true,
@@ -162,7 +176,7 @@ export class NoteService {
         },
       });
 
-      note.post['is_liked'] = note.post.likers
+      note.post['is_liked'] = note.post.likes
         .map((liker) => liker.likerId)
         .includes(userId);
 

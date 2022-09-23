@@ -43,6 +43,11 @@ export class PostController {
     return this.postService.likePost(userId, +postId);
   }
 
+  @Get(':id/bookmark')
+  bookmarkPost(@GetUser('id') userId: number, @Param('id') postId: string) {
+    return this.postService.bookmarkPost(userId, +postId);
+  }
+
   @Post(':id/comment')
   commentPost(
     @GetUser('id') userId: number,

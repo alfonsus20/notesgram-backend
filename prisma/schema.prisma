@@ -32,6 +32,7 @@ model User {
   commented_posts   PostComment[]      @relation("commented_posts")
   TopupTransactions TopupTransaction[]
   NotePurchases     NotePurchase[]
+  bookmarked_posts  PostBookmark[]     @relation("bookmarked_posts")
 
   @@map("users")
 }
@@ -45,9 +46,10 @@ model Post {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
 
-  note       Note?
-  likers     PostLike[]    @relation("likers")
-  commenters PostComment[] @relation("commenters")
+  note      Note?
+  likes     PostLike[]     @relation("likes")
+  comments  PostComment[]  @relation("comments")
+  bookmarks PostBookmark[] @relation("bookmarks")
 
   @@map("posts")
 }
@@ -96,7 +98,7 @@ model PostLike {
   postId  Int
 
   liker User @relation("liked_posts", fields: [likerId], references: [id])
-  post  Post @relation("likers", fields: [postId], references: [id])
+  post  Post @relation("likes", fields: [postId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 
@@ -110,7 +112,7 @@ model PostComment {
   comment     String
 
   commenter User @relation("commented_posts", fields: [commenterId], references: [id])
-  post      Post @relation("commenters", fields: [postId], references: [id])
+  post      Post @relation("comments", fields: [postId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
 
@@ -157,4 +159,17 @@ model PromoCode {
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 
   @@map("promo_codes")
+}
+
+model PostBookmark {
+  id           Int @id @default(autoincrement())
+  bookmarkerId Int
+  postId       Int
+
+  bookmarker User @relation("bookmarked_posts", fields: [bookmarkerId], references: [id])
+  post       Post @relation("bookmarks", fields: [postId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  
+  @@map("post_bookmarks")
 }

@@ -25,7 +25,7 @@ export class PostService {
         user: {
           select: { id: true, username: true, name: true, avatar_url: true },
         },
-        likers: { select: { likerId: true } },
+        likes: { select: { likerId: true } },
       },
     });
 
@@ -45,7 +45,7 @@ export class PostService {
         ...post.user,
         is_followed: followingUserIds.includes(post.user.id),
       },
-      is_liked: post.likers.map((liker) => liker.likerId).includes(userId),
+      is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
     }));
 
     return {
@@ -90,8 +90,8 @@ export class PostService {
             avatar_url: true,
           },
         },
-        likers: true,
-        _count: { select: { likers: true, commenters: true } },
+        likes: true,
+        _count: { select: { likes: true, comments: true } },
       },
     });
 
@@ -101,7 +101,7 @@ export class PostService {
         ...post.note,
         is_purchased: purchasedNoteIds.includes(post.note.id),
       },
-      is_liked: post.likers.map((liker) => liker.likerId).includes(userId),
+      is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
     }));
 
     return {
@@ -248,6 +248,45 @@ export class PostService {
         statusCode: HttpStatus.OK,
         message: 'Success explore post',
         data: { notes, users },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async bookmarkPost(userId: number, postId: number) {
+    try {
+      const postToBookmark = await this.prisma.post.findUnique({
+        where: { id: postId },
+      });
+
+      if (!postToBookmark) {
+        throw new NotFoundException('Post not found');
+      }
+
+      const postBookmark = await this.prisma.postBookmark.findFirst({
+        where: { bookmarkerId: userId, postId },
+      });
+
+      if (postBookmark) {
+        await this.prisma.postBookmark.delete({
+          where: { id: postBookmark.id },
+        });
+        return {
+          statusCode: HttpStatus.OK,
+          message: 'Success unbookmark post',
+          data: null,
+        };
+      }
+
+      await this.prisma.postBookmark.create({
+        data: { bookmarkerId: userId, postId },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success bookmark post',
+        data: null,
       };
     } catch (error) {
       throw error;
