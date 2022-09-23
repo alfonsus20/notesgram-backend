@@ -15,11 +15,6 @@ export class NoteController {
     return this.noteService.purchaseNote(user, dto);
   }
 
-  @Get('my')
-  getMyNotes(@GetUser('id') userId: number) {
-    return this.noteService.getMyNotes(userId);
-  }
-
   @Get('my/purchased')
   getMyPurchasedNotes(@GetUser('id') userId: number) {
     return this.noteService.getMyPurchasedNotes(userId);

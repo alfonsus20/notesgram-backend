@@ -95,23 +95,6 @@ export class NoteService {
     }
   }
 
-  async getMyNotes(userId: number) {
-    try {
-      const notes = await this.prismaService.note.findMany({
-        where: { post: { userId } },
-        include: { post: true, note_pictures: true },
-      });
-
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Success get my notes',
-        data: notes,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async getMyPurchasedNotes(userId: number) {
     try {
       const purchasedNoteIds = await this.prismaService.notePurchase.findMany({

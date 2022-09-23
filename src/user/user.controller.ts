@@ -15,14 +15,19 @@ export class UserController {
     return this.userService.getMyProfile(userId);
   }
 
-  @Get('me/followers')
-  getMyFollowers(@GetUser('id') userId: number) {
-    return this.userService.getMyFollowers(userId);
+  @Get(':userId/followers')
+  getUserFollowers(@Param('userId') userId: string) {
+    return this.userService.getUserFollowers(+userId);
   }
 
-  @Get('me/followings')
-  getMyFollowings(@GetUser('id') userId: number) {
-    return this.userService.getMyFollowings(userId);
+  @Get(':userId/followings')
+  getUserFollowings(@Param('userId') userId: string) {
+    return this.userService.getUserFollowings(+userId);
+  }
+
+  @Get(':userId/notes')
+  getUserNotes(@Param('userId') userId: string) {
+    return this.userService.getUserNotes(+userId);
   }
 
   @Get('username/check')

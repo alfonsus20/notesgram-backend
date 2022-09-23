@@ -31,7 +31,7 @@ export class PostService {
     const purchasedNoteIds = await this.getPurchasedNoteIds(userId);
 
     const followingUserIds = (
-      await this.userService.getMyFollowings(userId)
+      await this.userService.getUserFollowings(userId)
     ).data.map((following) => following.id);
 
     const modifiedNotes = posts.map((post) => ({

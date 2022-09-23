@@ -30,7 +30,7 @@ export class UserService {
     };
   }
 
-  async getMyFollowers(userId: number) {
+  async getUserFollowers(userId: number) {
     const followers = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -53,12 +53,12 @@ export class UserService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Success get my followers',
+      message: 'Success get user followers',
       data: structured,
     };
   }
 
-  async getMyFollowings(userId: number) {
+  async getUserFollowings(userId: number) {
     const followings = await this.prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -83,7 +83,7 @@ export class UserService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Success get my followings',
+      message: 'Success get user followings',
       data: structured,
     };
   }
@@ -172,6 +172,23 @@ export class UserService {
       };
     } catch (err) {
       throw err;
+    }
+  }
+
+  async getUserNotes(userId: number) {
+    try {
+      const notes = await this.prisma.note.findMany({
+        where: { post: { userId } },
+        include: { post: true, note_pictures: true },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success get user notes',
+        data: notes,
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }
