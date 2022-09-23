@@ -11,7 +11,7 @@ import { CreateUsernameDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getMyProfile(userId: number) {
+  async getUserProfile(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
@@ -25,7 +25,7 @@ export class UserService {
 
     return {
       statusCode: HttpStatus.OK,
-      message: 'Success get my profile',
+      message: 'Success get user profile',
       data: user,
     };
   }

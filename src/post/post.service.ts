@@ -25,6 +25,7 @@ export class PostService {
         user: {
           select: { id: true, username: true, name: true, avatar_url: true },
         },
+        bookmarks: { select: { bookmarkerId: true } },
         likes: { select: { likerId: true } },
       },
     });
@@ -46,6 +47,9 @@ export class PostService {
         is_followed: followingUserIds.includes(post.user.id),
       },
       is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
+      is_bookmarked: post.bookmarks
+        .map((bookmark) => bookmark.bookmarkerId)
+        .includes(userId),
     }));
 
     return {
@@ -91,6 +95,7 @@ export class PostService {
           },
         },
         likes: true,
+        bookmarks: true,
         _count: { select: { likes: true, comments: true } },
       },
     });
@@ -102,6 +107,9 @@ export class PostService {
         is_purchased: purchasedNoteIds.includes(post.note.id),
       },
       is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
+      is_bookmarked: post.bookmarks
+        .map((bookmark) => bookmark.bookmarkerId)
+        .includes(userId),
     }));
 
     return {

@@ -164,6 +164,7 @@ export class NoteService {
                 select: { likes: true, comments: true },
               },
               likes: true,
+              bookmarks: true,
             },
           },
           note_pictures: true,
@@ -178,6 +179,10 @@ export class NoteService {
 
       note.post['is_liked'] = note.post.likes
         .map((liker) => liker.likerId)
+        .includes(userId);
+
+      note.post['is_bookmarked'] = note.post.bookmarks
+        .map((bookmarker) => bookmarker.bookmarkerId)
         .includes(userId);
 
       note['is_purchased'] = note.purchases

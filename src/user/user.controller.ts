@@ -10,9 +10,9 @@ import { Param } from '@nestjs/common/decorators';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('me/profile')
-  getMyProfile(@GetUser('id') userId: number) {
-    return this.userService.getMyProfile(userId);
+  @Get(':id/profile')
+  getMyProfile(@Param('id') userId: string) {
+    return this.userService.getUserProfile(+userId);
   }
 
   @Get(':userId/followers')
