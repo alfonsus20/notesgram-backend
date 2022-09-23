@@ -21,7 +21,7 @@ export class NoteController {
   }
 
   @Get(':id')
-  getNoteById(@Param('id') noteId: string) {
-    return this.noteService.getNoteById(+noteId);
+  getNoteById(@GetUser('id') userId: number, @Param('id') noteId: string) {
+    return this.noteService.getNoteById(userId, +noteId);
   }
 }

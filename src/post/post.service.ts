@@ -90,6 +90,7 @@ export class PostService {
             avatar_url: true,
           },
         },
+        likers: true,
         _count: { select: { likers: true, commenters: true } },
       },
     });
@@ -100,6 +101,7 @@ export class PostService {
         ...post.note,
         is_purchased: purchasedNoteIds.includes(post.note.id),
       },
+      is_liked: post.likers.map((liker) => liker.likerId).includes(userId),
     }));
 
     return {

@@ -131,9 +131,9 @@ export class NoteService {
     }
   }
 
-  async getNoteById(noteId: number) {
+  async getNoteById(userId: number, noteId: number) {
     try {
-      const notes = await this.prismaService.note.findUnique({
+      const note = await this.prismaService.note.findUnique({
         where: { id: noteId },
         include: {
           post: {
@@ -149,6 +149,7 @@ export class NoteService {
               _count: {
                 select: { likers: true, commenters: true },
               },
+              likers: true,
             },
           },
           note_pictures: true,
@@ -157,13 +158,22 @@ export class NoteService {
               purchases: true,
             },
           },
+          purchases: { select: { userId: true } },
         },
       });
+
+      note.post['is_liked'] = note.post.likers
+        .map((liker) => liker.likerId)
+        .includes(userId);
+
+      note['is_purchased'] = note.purchases
+        .map((purchase) => purchase.userId)
+        .includes(userId);
 
       return {
         statusCode: HttpStatus.OK,
         message: 'Success get note by id',
-        data: notes,
+        data: note,
       };
     } catch (error) {
       throw error;
