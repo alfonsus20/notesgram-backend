@@ -65,4 +65,9 @@ export class PostController {
   ) {
     return this.postService.explorePost(noteTitle, username, authorName);
   }
+
+  @Get('my/bookmarked')
+  getMyBookmarkedPosts(@GetUser('id') userId: number) {
+    return this.postService.getMyBookmarkedPosts(userId);
+  }
 }

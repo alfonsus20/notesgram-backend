@@ -191,39 +191,4 @@ export class UserService {
       throw error;
     }
   }
-
-  async getMyBookmarkedPosts(userId: number) {
-    try {
-      const posts = await this.prisma.postBookmark.findMany({
-        where: { bookmarkerId: userId },
-        select: {
-          post: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  username: true,
-                  avatar_url: true,
-                },
-              },
-              note: {
-                include: { note_pictures: true },
-              },
-            },
-          },
-        },
-      });
-
-      const postsStructured = posts.map((post) => post.post);
-
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Success get bookmarked posts',
-        data: postsStructured,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
 }

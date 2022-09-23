@@ -34,6 +34,8 @@ model User {
   NotePurchases         NotePurchase[]
   bookmarked_posts      PostBookmark[]          @relation("bookmarked_posts")
   WithdrawalTransaction WithdrawalTransaction[]
+  BookmarkedGroup       BookmarkedGroup[]
+  PurchasedGroup        PurchasedGroup[]
 
   @@map("users")
 }
@@ -47,10 +49,12 @@ model Post {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
 
-  note      Note?
-  likes     PostLike[]     @relation("likes")
-  comments  PostComment[]  @relation("comments")
-  bookmarks PostBookmark[] @relation("bookmarks")
+  note                  Note?
+  likes                 PostLike[]              @relation("likes")
+  comments              PostComment[]           @relation("comments")
+  bookmarks             PostBookmark[]          @relation("bookmarks")
+  BookmarkedGroupMember BookmarkedGroupMember[]
+  PurchasedGroupMember  PurchasedGroupMember[]
 
   @@map("posts")
 }
@@ -191,4 +195,58 @@ model WithdrawalTransaction {
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@map("withdrawal_transactions")
+}
+
+model BookmarkedGroup {
+  id     Int    @id @default(autoincrement())
+  name   String
+  userId Int
+
+  user      User                    @relation(fields: [userId], references: [id])
+  createdAt DateTime                @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime                @updatedAt @db.Timestamptz(3)
+  members   BookmarkedGroupMember[]
+
+  @@map("note_bookmarked_groups")
+}
+
+model BookmarkedGroupMember {
+  id      Int @id @default(autoincrement())
+  postId  Int
+  groupId Int
+
+  group BookmarkedGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  post  Post            @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("note_bookmarked_group_members")
+}
+
+model PurchasedGroup {
+  id     Int    @id @default(autoincrement())
+  name   String
+  userId Int
+
+  user      User                   @relation(fields: [userId], references: [id])
+  createdAt DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime               @updatedAt @db.Timestamptz(3)
+  members   PurchasedGroupMember[]
+
+  @@map("note_purchased_groups")
+}
+
+model PurchasedGroupMember {
+  id      Int @id @default(autoincrement())
+  postId  Int
+  groupId Int
+
+  group PurchasedGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  post  Post           @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  @@map("note_purchased_group_members")
 }

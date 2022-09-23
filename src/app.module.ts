@@ -12,6 +12,9 @@ import { NoteModule } from './note/note.module';
 import { PromoController } from './promo/promo.controller';
 import { PromoService } from './promo/promo.service';
 import { PromoModule } from './promo/promo.module';
+import { NoteGroupController } from './note-group/note-group.controller';
+import { NoteGroupService } from './note-group/note-group.service';
+import { NoteGroupModule } from './note-group/note-group.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,8 +26,9 @@ import { PromoModule } from './promo/promo.module';
     PaymentModule,
     NoteModule,
     PromoModule,
+    NoteGroupModule,
   ],
-  controllers: [AppController, PromoController],
-  providers: [AppService, PromoService],
+  controllers: [AppController, PromoController, NoteGroupController],
+  providers: [AppService, PromoService, NoteGroupService],
 })
 export class AppModule {}

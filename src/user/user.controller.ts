@@ -50,9 +50,4 @@ export class UserController {
   ) {
     return this.userService.followUser(followerId, +followingId);
   }
-
-  @Get('my/posts/bookmarked')
-  getMyBookmarkedPosts(@GetUser('id') userId: number) {
-    return this.userService.getMyBookmarkedPosts(userId);
-  }
 }
