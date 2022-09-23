@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -26,8 +26,6 @@ export class PaymentService {
 
   async handleCallbackTopupCoin(dto: PaymentCallbackDto) {
     let status = '';
-
-    console.log({ withdraw: dto });
 
     if (dto.status === 'complete') {
       status = PaymentStatus.SUCCESS;
@@ -63,30 +61,36 @@ export class PaymentService {
   }
 
   async topupCoin(user: User, dto: TopupCoinDto) {
-    const transaction = await this.prismaService.topupTransaction.create({
-      data: {
-        amount: dto.amount,
-        userId: user.id,
-        status: PaymentStatus.WAITING,
-        admin_fee: 500,
-      },
-    });
+    const { data, transaction } = await this.prismaService.$transaction(
+      async (prismaTrans) => {
+        const transaction = await prismaTrans.topupTransaction.create({
+          data: {
+            amount: dto.amount,
+            userId: user.id,
+            status: PaymentStatus.WAITING,
+            admin_fee: 500,
+          },
+        });
 
-    const fixedAmount = dto.amount + 500;
+        const fixedAmount = dto.amount + 500;
 
-    const { data } = await this.httpService.axiosRef.post(
-      `${this.oyBaseURL}/payment-checkout/create-v2`,
-      {
-        sender_name: user.name,
-        amount: fixedAmount,
-        email: user.email,
-        is_open: false,
-        include_admin_fee: true,
-        list_disabled_payment_methods: 'CREDIT_CARD',
-        va_display_name: 'Notesgram Coin Topup',
-        partner_tx_id: transaction.id,
+        const { data } = await this.httpService.axiosRef.post(
+          `${this.oyBaseURL}/payment-checkout/create-v2`,
+          {
+            sender_name: user.name,
+            amount: fixedAmount,
+            email: user.email,
+            is_open: false,
+            include_admin_fee: true,
+            list_disabled_payment_methods: 'CREDIT_CARD',
+            va_display_name: 'Notesgram Coin Topup',
+            partner_tx_id: transaction.id,
+          },
+          { headers: this.headers },
+        );
+
+        return { data, transaction };
       },
-      { headers: this.headers },
     );
 
     return {
@@ -98,6 +102,10 @@ export class PaymentService {
 
   async withDrawMoney(user: User, dto: WithdrawDto) {
     try {
+      if (user.coins < dto.amount + 500) {
+        throw new BadRequestException('Balance is not sufficient');
+      }
+
       const { data, transaction } = await this.prismaService.$transaction(
         async (prismaTrans) => {
           const transaction = await prismaTrans.withdrawalTransaction.create({
@@ -113,7 +121,7 @@ export class PaymentService {
 
           await prismaTrans.user.update({
             where: { id: user.id },
-            data: { coins: user.coins - dto.amount - 500 },
+            data: { coins: user.coins - dto.amount },
           });
 
           // Minus admin fee
