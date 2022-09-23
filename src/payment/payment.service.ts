@@ -27,6 +27,8 @@ export class PaymentService {
   async handleCallbackTopupCoin(dto: PaymentCallbackDto) {
     let status = '';
 
+    console.log({ withdraw: dto });
+
     if (dto.status === 'complete') {
       status = PaymentStatus.SUCCESS;
 

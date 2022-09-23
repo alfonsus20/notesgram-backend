@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 export class WithdrawDto {
   @IsNotEmpty()
   @IsNumber()
-  @Min(10000)
+  @Min(15000)
   amount: number;
 
   @IsNotEmpty()
