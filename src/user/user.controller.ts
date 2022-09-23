@@ -15,6 +15,16 @@ export class UserController {
     return this.userService.getMyProfile(userId);
   }
 
+  @Get('me/followers')
+  getMyFollowers(@GetUser('id') userId: number) {
+    return this.userService.getMyFollowers(userId);
+  }
+
+  @Get('me/followings')
+  getMyFollowings(@GetUser('id') userId: number) {
+    return this.userService.getMyFollowings(userId);
+  }
+
   @Get('username/check')
   checkUsername(@Query('username') username: string) {
     return this.userService.checkUsername(username);

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
+import { UserService } from '../user/user.service';
 import { CommentPostDto, CreatePostDto } from './dto';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class PostService {
   constructor(
     private storageService: StorageService,
     private prisma: PrismaService,
+    private userService: UserService,
   ) {}
 
   async getPosts(userId: number) {
@@ -28,11 +30,19 @@ export class PostService {
 
     const purchasedNoteIds = await this.getPurchasedNoteIds(userId);
 
+    const followingUserIds = (
+      await this.userService.getMyFollowings(userId)
+    ).data.map((following) => following.id);
+
     const modifiedNotes = posts.map((post) => ({
       ...post,
       note: {
         ...post.note,
         is_purchased: purchasedNoteIds.includes(post.note.id),
+      },
+      user: {
+        ...post.user,
+        is_followed: followingUserIds.includes(post.user.id),
       },
     }));
 

@@ -30,6 +30,64 @@ export class UserService {
     };
   }
 
+  async getMyFollowers(userId: number) {
+    const followers = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        followers: {
+          select: {
+            follower: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                avatar_url: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const structured = followers.followers.map((follower) => follower.follower);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success get my followers',
+      data: structured,
+    };
+  }
+
+  async getMyFollowings(userId: number) {
+    const followings = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        followings: {
+          select: {
+            following: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                avatar_url: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const structured = followings.followings.map(
+      (following) => following.following,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success get my followings',
+      data: structured,
+    };
+  }
+
   async checkUsername(username: string) {
     if (!username) {
       throw new BadRequestException('Username is required');
