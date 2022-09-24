@@ -11,8 +11,11 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get(':id/profile')
-  getMyProfile(@Param('id') userId: string) {
-    return this.userService.getUserProfile(+userId);
+  getMyProfile(
+    @GetUser('id') loggedInUserId: number,
+    @Param('id') userId: string,
+  ) {
+    return this.userService.getUserProfile(loggedInUserId, +userId);
   }
 
   @Get(':userId/followers')

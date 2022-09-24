@@ -49,8 +49,8 @@ export class NoteService {
         discount = promo.discount;
       }
 
-      const purchase = await this.prismaService.$transaction(
-        async (prismaTrans) => {
+      const { newPurchase, currentUserInfo } =
+        await this.prismaService.$transaction(async (prismaTrans) => {
           const finalPrice = note.price * ((100 - discount) / 100);
 
           await prismaTrans.user.update({
@@ -79,14 +79,24 @@ export class NoteService {
             },
           });
 
-          return newPurchase;
-        },
-      );
+          const currentUserInfo = await prismaTrans.user.findUnique({
+            where: { id: user.id },
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              avatar_url: true,
+              coins: true,
+            },
+          });
+
+          return { newPurchase, currentUserInfo };
+        });
 
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Success purchase note',
-        data: purchase,
+        data: { ...newPurchase, user: currentUserInfo },
       };
     } catch (error) {
       throw error;

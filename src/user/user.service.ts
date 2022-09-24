@@ -11,22 +11,31 @@ import { CreateUsernameDto } from './dto';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async getUserProfile(userId: number) {
+  async getUserProfile(loggedInUserId: number, userId: number) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       include: {
         _count: {
           select: { posts: true, followers: true, followings: true },
         },
+        followers: {
+          select: {
+            followerId: true,
+          },
+        },
       },
     });
 
     delete user.password;
 
+    const is_followed = user.followers
+      .map((follower) => follower.followerId)
+      .includes(loggedInUserId);
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Success get user profile',
-      data: user,
+      data: { user, is_followed },
     };
   }
 
