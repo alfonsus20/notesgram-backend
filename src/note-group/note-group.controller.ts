@@ -1,11 +1,12 @@
-import { Controller, Get, Body } from '@nestjs/common';
+import { Controller, Get, Body, Put, Param } from '@nestjs/common';
 import { Post, UseGuards } from '@nestjs/common/decorators';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
-import { PurchaseNoteDto } from '../note/dto';
 import {
   CreateBookmarkedNoteGroupDto,
   CreatePurchasedNoteGroupDto,
+  UpdateBookmarkedNoteGroupDto,
+  UpdatePurchasedNoteGroupDto,
 } from './dto';
 import { NoteGroupService } from './note-group.service';
 
@@ -38,5 +39,31 @@ export class NoteGroupController {
     @Body() dto: CreateBookmarkedNoteGroupDto,
   ) {
     return this.noteGroupService.createBookmarkedNoteGroup(userId, dto);
+  }
+
+  @Put('bookmarked/:groupId')
+  updateBookmarkedPostGroups(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+    @Body() dto: UpdateBookmarkedNoteGroupDto,
+  ) {
+    return this.noteGroupService.updateBookmarkedNoteGroup(
+      userId,
+      +groupId,
+      dto,
+    );
+  }
+
+  @Put('purchased/:groupId')
+  updatePurchasedPostGroups(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+    @Body() dto: UpdatePurchasedNoteGroupDto,
+  ) {
+    return this.noteGroupService.updatePurchasedNoteGroup(
+      userId,
+      +groupId,
+      dto,
+    );
   }
 }

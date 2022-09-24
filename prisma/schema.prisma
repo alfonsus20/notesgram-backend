@@ -53,8 +53,6 @@ model Post {
   likes                 PostLike[]              @relation("likes")
   comments              PostComment[]           @relation("comments")
   bookmarks             PostBookmark[]          @relation("bookmarks")
-  BookmarkedGroupMember BookmarkedGroupMember[]
-  PurchasedGroupMember  PurchasedGroupMember[]
 
   @@map("posts")
 }
@@ -66,10 +64,12 @@ model Note {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
-  note_pictures NotePicture[]
-  post          Post           @relation(fields: [postId], references: [id])
-  postId        Int            @unique
-  purchases     NotePurchase[]
+  note_pictures         NotePicture[]
+  post                  Post                    @relation(fields: [postId], references: [id])
+  postId                Int                     @unique
+  purchases             NotePurchase[]
+  PurchasedGroupMember  PurchasedGroupMember[]
+  BookmarkedGroupMember BookmarkedGroupMember[]
 
   @@map("notes")
 }
@@ -205,18 +205,18 @@ model BookmarkedGroup {
   user      User                    @relation(fields: [userId], references: [id])
   createdAt DateTime                @default(now()) @db.Timestamptz(3)
   updatedAt DateTime                @updatedAt @db.Timestamptz(3)
-  members   BookmarkedGroupMember[]
+  note_ids  BookmarkedGroupMember[]
 
   @@map("note_bookmarked_groups")
 }
 
 model BookmarkedGroupMember {
   id      Int @id @default(autoincrement())
-  postId  Int
+  noteId  Int
   groupId Int
 
   group BookmarkedGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  post  Post            @relation(fields: [postId], references: [id])
+  note  Note            @relation(fields: [noteId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
@@ -232,18 +232,18 @@ model PurchasedGroup {
   user      User                   @relation(fields: [userId], references: [id])
   createdAt DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt DateTime               @updatedAt @db.Timestamptz(3)
-  members   PurchasedGroupMember[]
+  note_ids  PurchasedGroupMember[]
 
   @@map("note_purchased_groups")
 }
 
 model PurchasedGroupMember {
   id      Int @id @default(autoincrement())
-  postId  Int
+  noteId  Int
   groupId Int
 
   group PurchasedGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  post  Post           @relation(fields: [postId], references: [id])
+  note  Note           @relation(fields: [noteId], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
