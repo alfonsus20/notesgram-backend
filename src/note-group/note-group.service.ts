@@ -198,4 +198,52 @@ export class NoteGroupService {
       throw error;
     }
   }
+
+  async deleteBookmarkedNoteGroup(userId: number, groupId: number) {
+    try {
+      const group = await this.prismaService.bookmarkedGroup.findFirst({
+        where: { id: groupId, userId },
+      });
+
+      if (!group) {
+        throw new NotFoundException('Bookmarked group note not found');
+      }
+
+      await this.prismaService.bookmarkedGroup.delete({
+        where: { id: groupId },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success delete bookmarked note group',
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deletePurchasedNoteGroup(userId: number, groupId: number) {
+    try {
+      const group = await this.prismaService.purchasedGroup.findFirst({
+        where: { id: groupId, userId },
+      });
+
+      if (!group) {
+        throw new NotFoundException('Purchased group note not found');
+      }
+
+      await this.prismaService.purchasedGroup.delete({
+        where: { id: groupId },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success delete purchased note group',
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

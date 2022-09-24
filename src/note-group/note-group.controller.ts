@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Put, Param } from '@nestjs/common';
+import { Controller, Get, Body, Put, Param, Delete } from '@nestjs/common';
 import { Post, UseGuards } from '@nestjs/common/decorators';
 import { GetUser } from '../auth/decorators';
 import { JwtGuard } from '../auth/guard';
@@ -65,5 +65,21 @@ export class NoteGroupController {
       +groupId,
       dto,
     );
+  }
+
+  @Delete('bookmarked/:groupId')
+  deleteBookmarkedPostGroups(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+  ) {
+    return this.noteGroupService.deleteBookmarkedNoteGroup(userId, +groupId);
+  }
+
+  @Delete('purchased/:groupId')
+  deletePurchasedPostGroups(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+  ) {
+    return this.noteGroupService.deletePurchasedNoteGroup(userId, +groupId);
   }
 }
