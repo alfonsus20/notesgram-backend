@@ -15,7 +15,7 @@ export class NoteGroupService {
     try {
       const groups = await this.prismaService.bookmarkedGroup.findMany({
         include: {
-          note_ids: {
+          notes: {
             include: {
               note: {
                 include: {
@@ -43,7 +43,7 @@ export class NoteGroupService {
     try {
       const groups = await this.prismaService.purchasedGroup.findMany({
         include: {
-          note_ids: {
+          notes: {
             include: {
               note: {
                 include: {
@@ -61,6 +61,92 @@ export class NoteGroupService {
         statusCode: HttpStatus.OK,
         message: 'Success get my purchased note groups',
         data: groups,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMyBookmarkedNoteGroupDetail(userId: number, groupId: number) {
+    try {
+      const group = await this.prismaService.bookmarkedGroup.findFirst({
+        where: { userId, id: groupId },
+        include: {
+          notes: {
+            include: {
+              note: {
+                include: {
+                  note_pictures: true,
+                  post: {
+                    include: {
+                      user: {
+                        select: {
+                          id: true,
+                          name: true,
+                          username: true,
+                          avatar_url: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!group) {
+        throw new NotFoundException('Group not found');
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success get bookmarked group detail',
+        data: group,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMyPurchasedNoteGroupDetail(userId: number, groupId: number) {
+    try {
+      const group = await this.prismaService.purchasedGroup.findFirst({
+        where: { userId, id: groupId },
+        include: {
+          notes: {
+            include: {
+              note: {
+                include: {
+                  note_pictures: true,
+                  post: {
+                    include: {
+                      user: {
+                        select: {
+                          id: true,
+                          name: true,
+                          username: true,
+                          avatar_url: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!group) {
+        throw new NotFoundException('Group not found');
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success get purchased group detail',
+        data: group,
       };
     } catch (error) {
       throw error;

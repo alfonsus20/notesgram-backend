@@ -67,8 +67,30 @@ export class NoteGroupController {
     );
   }
 
+  @Get('my/bookmarked/:groupId')
+  getMyBookmarkedPostGroupDetail(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+  ) {
+    return this.noteGroupService.getMyBookmarkedNoteGroupDetail(
+      userId,
+      +groupId,
+    );
+  }
+
+  @Get('my/purchased/:groupId')
+  getMyPurchasedPostGroupDetail(
+    @GetUser('id') userId: number,
+    @Param('groupId') groupId: string,
+  ) {
+    return this.noteGroupService.getMyPurchasedNoteGroupDetail(
+      userId,
+      +groupId,
+    );
+  }
+
   @Delete('bookmarked/:groupId')
-  deleteBookmarkedPostGroups(
+  deleteBookmarkedNoteGroup(
     @GetUser('id') userId: number,
     @Param('groupId') groupId: string,
   ) {
@@ -76,7 +98,7 @@ export class NoteGroupController {
   }
 
   @Delete('purchased/:groupId')
-  deletePurchasedPostGroups(
+  deletePurchasedNoteGroup(
     @GetUser('id') userId: number,
     @Param('groupId') groupId: string,
   ) {

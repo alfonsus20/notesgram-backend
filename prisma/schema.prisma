@@ -205,7 +205,7 @@ model BookmarkedGroup {
   user      User                    @relation(fields: [userId], references: [id])
   createdAt DateTime                @default(now()) @db.Timestamptz(3)
   updatedAt DateTime                @updatedAt @db.Timestamptz(3)
-  note_ids  BookmarkedGroupMember[]
+  notes  BookmarkedGroupMember[]
 
   @@map("note_bookmarked_groups")
 }
@@ -232,7 +232,7 @@ model PurchasedGroup {
   user      User                   @relation(fields: [userId], references: [id])
   createdAt DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt DateTime               @updatedAt @db.Timestamptz(3)
-  note_ids  PurchasedGroupMember[]
+  notes  PurchasedGroupMember[]
 
   @@map("note_purchased_groups")
 }
