@@ -21,6 +21,7 @@ model User {
   google_id  String? @unique
   avatar_url String?
   coins      Int     @default(0)
+  is_admin   Boolean @default(false)
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
@@ -49,10 +50,10 @@ model Post {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
 
-  note                  Note?
-  likes                 PostLike[]              @relation("likes")
-  comments              PostComment[]           @relation("comments")
-  bookmarks             PostBookmark[]          @relation("bookmarks")
+  note      Note?
+  likes     PostLike[]     @relation("likes")
+  comments  PostComment[]  @relation("comments")
+  bookmarks PostBookmark[] @relation("bookmarks")
 
   @@map("posts")
 }
@@ -205,7 +206,7 @@ model BookmarkedGroup {
   user      User                    @relation(fields: [userId], references: [id])
   createdAt DateTime                @default(now()) @db.Timestamptz(3)
   updatedAt DateTime                @updatedAt @db.Timestamptz(3)
-  notes  BookmarkedGroupMember[]
+  notes     BookmarkedGroupMember[]
 
   @@map("note_bookmarked_groups")
 }
@@ -232,7 +233,7 @@ model PurchasedGroup {
   user      User                   @relation(fields: [userId], references: [id])
   createdAt DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt DateTime               @updatedAt @db.Timestamptz(3)
-  notes  PurchasedGroupMember[]
+  notes     PurchasedGroupMember[]
 
   @@map("note_purchased_groups")
 }
