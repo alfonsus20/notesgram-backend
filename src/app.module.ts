@@ -16,6 +16,7 @@ import { NoteGroupController } from './note-group/note-group.controller';
 import { NoteGroupService } from './note-group/note-group.service';
 import { NoteGroupModule } from './note-group/note-group.module';
 import { ChallengeModule } from './challenge/challenge.module';
+import { ProfileModule } from './profile/profile.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,6 +30,7 @@ import { ChallengeModule } from './challenge/challenge.module';
     PromoModule,
     NoteGroupModule,
     ChallengeModule,
+    ProfileModule,
   ],
   controllers: [AppController, PromoController, NoteGroupController],
   providers: [AppService, PromoService, NoteGroupService],
