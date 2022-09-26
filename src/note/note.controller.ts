@@ -1,11 +1,11 @@
 import { Controller, Post, UseGuards, Body, Get, Param } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators';
-import { JwtGuard } from '../auth/guard';
+import { FirebaseGuard } from '../auth/guard';
 import { PurchaseNoteDto } from './dto';
 import { NoteService } from './note.service';
 
-@UseGuards(JwtGuard)
+@UseGuards(FirebaseGuard)
 @Controller('note')
 export class NoteController {
   constructor(private noteService: NoteService) {}

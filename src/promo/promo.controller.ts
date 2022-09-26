@@ -1,9 +1,8 @@
 import { Controller, Query, Get, UseGuards } from '@nestjs/common';
+import { FirebaseGuard } from '../auth/guard';
 import { PromoService } from './promo.service';
 
-import { JwtGuard } from '../auth/guard';
-
-@UseGuards(JwtGuard)
+@UseGuards(FirebaseGuard)
 @Controller('promo')
 export class PromoController {
   constructor(private promoService: PromoService) {}

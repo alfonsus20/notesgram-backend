@@ -19,7 +19,7 @@ export class PostService {
 
   async getPosts(userId: number) {
     const posts = await this.prisma.post.findMany({
-      where: { userId: { not: userId } },
+      // where: { userId: { not: userId } },
       include: {
         note: { include: { note_pictures: true } },
         user: {

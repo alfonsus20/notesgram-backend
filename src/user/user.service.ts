@@ -26,8 +26,6 @@ export class UserService {
       },
     });
 
-    delete user.password;
-
     const is_followed = user.followers
       .map((follower) => follower.followerId)
       .includes(loggedInUserId);

@@ -15,7 +15,7 @@ jobs:
         run: |
           touch .env
           echo DATABASE_URL=${{ secrets.DATABASE_URL }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
+          echo FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }} >> .env
           echo STORAGE_BUCKET_NAME=${{ secrets.STORAGE_BUCKET_NAME }} >> .env
           echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
           echo OY_API_KEY=${{ secrets.OY_API_KEY }} >> .env

@@ -1,7 +1,7 @@
 import { Controller, Get, Body, Put, Param, Delete } from '@nestjs/common';
 import { Post, UseGuards } from '@nestjs/common/decorators';
 import { GetUser } from '../auth/decorators';
-import { JwtGuard } from '../auth/guard';
+import { FirebaseGuard } from '../auth/guard';
 import {
   CreateBookmarkedNoteGroupDto,
   CreatePurchasedNoteGroupDto,
@@ -10,7 +10,7 @@ import {
 } from './dto';
 import { NoteGroupService } from './note-group.service';
 
-@UseGuards(JwtGuard)
+@UseGuards(FirebaseGuard)
 @Controller('note-group')
 export class NoteGroupController {
   constructor(private noteGroupService: NoteGroupService) {}

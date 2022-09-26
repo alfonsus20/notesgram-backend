@@ -18,8 +18,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { id: payload.sub },
     });
 
-    delete user.password;
-
     return user;
   }
 }

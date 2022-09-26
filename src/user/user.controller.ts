@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { JwtGuard } from '../auth/guard';
+import { FirebaseGuard } from '../auth/guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { UserService } from './user.service';
 import { CreateUsernameDto } from './dto';
 import { Param } from '@nestjs/common/decorators';
 
 @Controller('user')
-@UseGuards(JwtGuard)
+@UseGuards(FirebaseGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
