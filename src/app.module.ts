@@ -19,6 +19,7 @@ import { ChallengeModule } from './challenge/challenge.module';
 import { ProfileModule } from './profile/profile.module';
 import { NotificationModule } from './notification/notification.module';
 import { FirebaseModule } from './firebase/firebase.module';
+import { TransactionModule } from './transaction/transaction.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -35,6 +36,7 @@ import { FirebaseModule } from './firebase/firebase.module';
     ProfileModule,
     NotificationModule,
     FirebaseModule,
+    TransactionModule,
   ],
   controllers: [AppController, PromoController, NoteGroupController],
   providers: [AppService, PromoService, NoteGroupService],
