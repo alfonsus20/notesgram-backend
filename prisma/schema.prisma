@@ -14,13 +14,14 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
 
-  email       String?  @unique
+  email       String? @unique
   name        String?
   username    String? @unique
   firebase_id String  @unique
   avatar_url  String?
   coins       Int     @default(0)
   is_admin    Boolean @default(false)
+  fcm_token   String?
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
@@ -36,6 +37,8 @@ model User {
   WithdrawalTransaction WithdrawalTransaction[]
   BookmarkedGroup       BookmarkedGroup[]
   PurchasedGroup        PurchasedGroup[]
+  Notification          Notification[]
+  NotificationRead      NotificationRead[]
 
   @@map("users")
 }
@@ -249,4 +252,36 @@ model PurchasedGroupMember {
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   @@map("note_purchased_group_members")
+}
+
+model Notification {
+  id     Int    @id @default(autoincrement())
+  title  String
+  body   String
+  userId Int?
+  category NotificationCategory 
+
+  user User? @relation(fields: [userId], references: [id])
+
+  createdAt        DateTime           @default(now()) @db.Timestamptz(3)
+  NotificationRead NotificationRead[]
+
+  @@map("notifications")
+}
+
+enum NotificationCategory {
+  INFO
+  PROMO
+}
+
+model NotificationRead {
+  id             Int     @id @default(autoincrement())
+  notificationId Int
+  userId         Int
+  is_read        Boolean @default(false)
+
+  user         User         @relation(fields: [userId], references: [id])
+  notification Notification @relation(fields: [notificationId], references: [id])
+
+  @@map("notification_read")
 }
