@@ -1,30 +1,24 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
-import * as firebase from 'firebase-admin';
-import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../../prisma/prisma.service';
-
+import { FirebaseService } from '../../firebase/firebase.service';
 @Injectable()
 export class FirebaseStrategy extends PassportStrategy(
   Strategy,
   'firebase-auth',
 ) {
-  private defaultApp: firebase.app.App;
-
-  constructor(config: ConfigService, private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    private firebase: FirebaseService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    });
-    this.defaultApp = firebase.initializeApp({
-      credential: firebase.credential.cert(
-        JSON.parse(config.get<string>('FIREBASE_CONFIG')),
-      ),
     });
   }
 
   async validate(token: string) {
-    const firebaseUser = await this.defaultApp
+    const firebaseUser = await this.firebase.defaultApp
       .auth()
       .verifyIdToken(token)
       .catch(() => {

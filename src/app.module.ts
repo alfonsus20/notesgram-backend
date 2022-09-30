@@ -17,6 +17,8 @@ import { NoteGroupService } from './note-group/note-group.service';
 import { NoteGroupModule } from './note-group/note-group.module';
 import { ChallengeModule } from './challenge/challenge.module';
 import { ProfileModule } from './profile/profile.module';
+import { NotificationModule } from './notification/notification.module';
+import { FirebaseModule } from './firebase/firebase.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -31,6 +33,8 @@ import { ProfileModule } from './profile/profile.module';
     NoteGroupModule,
     ChallengeModule,
     ProfileModule,
+    NotificationModule,
+    FirebaseModule,
   ],
   controllers: [AppController, PromoController, NoteGroupController],
   providers: [AppService, PromoService, NoteGroupService],
