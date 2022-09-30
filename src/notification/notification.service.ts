@@ -1,4 +1,9 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
 import * as firebase from 'firebase-admin';
 import { PrismaService } from '../prisma/prisma.service';
@@ -92,6 +97,34 @@ export class NotificationService {
       statusCode: HttpStatus.OK,
       message: 'Success get all notifications',
       data: modified,
+    };
+  }
+
+  async markAsRead(userId: number, notifId: number) {
+    const notification = await this.prisma.notification.findFirst({
+      where: { OR: [{ userId }, { userId: null }], id: notifId },
+    });
+
+    if (!notification) {
+      throw new NotFoundException('Notification not found');
+    }
+
+    const notificationRead = await this.prisma.notificationRead.findFirst({
+      where: { userId, notificationId: notifId },
+    });
+
+    if (notificationRead) {
+      throw new BadRequestException('Notification has already been read');
+    }
+
+    await this.prisma.notificationRead.create({
+      data: { userId, notificationId: notifId },
+    });
+
+    return {
+      statusCode: HttpStatus.CREATED,
+      message: 'Notification was successfully read',
+      data: null,
     };
   }
 }
