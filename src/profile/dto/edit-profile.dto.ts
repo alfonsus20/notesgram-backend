@@ -8,4 +8,8 @@ export class EditProfileDto {
   @IsOptional()
   @IsString()
   username?: string;
+
+  @IsOptional()
+  @IsString()
+  fcm_token?: string;
 }

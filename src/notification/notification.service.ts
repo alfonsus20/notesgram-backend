@@ -68,4 +68,30 @@ export class NotificationService {
       data: notification,
     };
   }
+
+  async getNotifications(userId: number) {
+    const notifications = await this.prisma.notification.findMany({
+      where: { OR: [{ userId }, { userId: null }] },
+      include: { NotificationRead: true },
+    });
+
+    const modified = notifications.map((notification) => {
+      const structured = {
+        ...notification,
+        is_read: notification.NotificationRead.some(
+          (notifRead) => notifRead.userId === userId,
+        ),
+      };
+
+      delete structured.NotificationRead;
+
+      return structured;
+    });
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success get all notifications',
+      data: modified,
+    };
+  }
 }

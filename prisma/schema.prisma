@@ -278,7 +278,6 @@ model NotificationRead {
   id             Int     @id @default(autoincrement())
   notificationId Int
   userId         Int
-  is_read        Boolean @default(false)
 
   user         User         @relation(fields: [userId], references: [id])
   notification Notification @relation(fields: [notificationId], references: [id])

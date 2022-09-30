@@ -43,7 +43,11 @@ export class ProfileService {
         }
       }
 
-      const newData = { name: dto.name, username: dto.username };
+      const newData = {
+        name: dto.name,
+        username: dto.username,
+        fcm_token: dto.fcm_token,
+      };
 
       if (profilePic) {
         if (
