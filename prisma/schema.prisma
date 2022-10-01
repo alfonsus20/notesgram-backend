@@ -318,6 +318,8 @@ model Challenge {
   title       String
   description String
   endAt       DateTime          @db.Timestamptz(3)
+  count       Int
+  reward      Int
 
   createdAt      DateTime         @default(now()) @db.Timestamptz(3)
   ChallengeClaim ChallengeClaim[]
@@ -345,7 +347,10 @@ enum ChallengePeriod {
 }
 
 enum ChallengeCategory {
-  COMMENT
-  LIKE
+  COMMENT_GIVEN
+  LIKE_GIVEN
+  COMMENT_GAINED
+  LIKE_GAINED
   NOTE_SALE
+  NOTE_PURCHASE
 }
