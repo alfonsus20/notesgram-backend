@@ -9,12 +9,11 @@ export class AuthService {
     return this.notificationService.sendNotifToSpecificUser(
       userId,
       {
-        notification: {
-          title: 'Notifikasi Keamanan',
-          body: 'Kami menemukan adanya login baru ke akun Anda di perangkat lain. Jika ini memang Anda, Anda tidak perlu melakukan apa-apa. Jika bukan, kami akan membantu untuk mengamankan akun Anda.',
-        },
+        title: 'Notifikasi Keamanan',
+        body: 'Kami menemukan adanya login baru ke akun Anda di perangkat lain. Jika ini memang Anda, Anda tidak perlu melakukan apa-apa. Jika bukan, kami akan membantu untuk mengamankan akun Anda.',
       },
       'INFO',
+      {},
     );
   }
 }

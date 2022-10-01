@@ -5,9 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { FirebaseService } from '../firebase/firebase.service';
-import * as firebase from 'firebase-admin';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationCategory } from '@prisma/client';
+import { NotificationData, NotificationInfo } from './types';
 
 @Injectable()
 export class NotificationService {
@@ -17,28 +17,36 @@ export class NotificationService {
   ) {}
 
   async sendNotifToSpecificUser(
-    userId: number,
-    message: firebase.messaging.MessagingPayload,
+    receiverId: number,
+    info: NotificationInfo,
     type: NotificationCategory,
+    data: NotificationData,
   ) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: receiverId },
+    });
 
     if (user.fcm_token) {
       const notification = await this.prisma.notification.create({
         data: {
-          title: message.notification.title,
-          body: message.notification.body,
+          title: info.title,
+          body: info.body,
           category: type,
-          userId,
+          receiverId,
+          ...data,
         },
       });
 
-      message.notification.icon =
-        'https://kcettakvwqchjfujgwao.supabase.co/storage/v1/object/public/images/favicon.png';
+      console.log({ token: user.fcm_token, info });
 
       const firebaseResponse = await this.firebaseService.defaultApp
         .messaging()
-        .sendToDevice(user.fcm_token, message);
+        .sendToDevice(user.fcm_token, {
+          notification: {
+            ...info,
+            icon: 'https://kcettakvwqchjfujgwao.supabase.co/storage/v1/object/public/images/favicon.png',
+          },
+        });
 
       return {
         statusCode: HttpStatus.OK,
@@ -50,22 +58,19 @@ export class NotificationService {
     }
   }
 
-  async sendGlobalNotif(
-    message: firebase.messaging.Message,
-    type: NotificationCategory,
-  ) {
+  async sendGlobalNotif(info: NotificationInfo, type: NotificationCategory) {
     const notification = await this.prisma.notification.create({
       data: {
-        title: message.notification.title,
-        body: message.notification.body,
+        title: info.title,
+        body: info.body,
         category: type,
       },
     });
 
-    message.android.notification.icon =
-      'https://kcettakvwqchjfujgwao.supabase.co/storage/v1/object/public/images/favicon.png';
-
-    await this.firebaseService.defaultApp.messaging().send(message);
+    await this.firebaseService.defaultApp.messaging().send({
+      notification: { title: info.title, body: info.body },
+      condition: '',
+    });
 
     return {
       statusCode: HttpStatus.OK,
@@ -74,17 +79,24 @@ export class NotificationService {
     };
   }
 
-  async getNotifications(userId: number) {
+  async getNotifications(receiverId: number) {
     const notifications = await this.prisma.notification.findMany({
-      where: { OR: [{ userId }, { userId: null }] },
-      include: { NotificationRead: true },
+      where: { OR: [{ receiverId }, { receiverId: null }] },
+      include: {
+        NotificationRead: true,
+        creator: true,
+        post: true,
+        note: true,
+        topup: true,
+        withdrawal: true,
+      },
     });
 
     const modified = notifications.map((notification) => {
       const structured = {
         ...notification,
         is_read: notification.NotificationRead.some(
-          (notifRead) => notifRead.userId === userId,
+          (notifRead) => notifRead.userId === receiverId,
         ),
       };
 
@@ -100,9 +112,9 @@ export class NotificationService {
     };
   }
 
-  async markAsRead(userId: number, notifId: number) {
+  async markAsRead(receiverId: number, notifId: number) {
     const notification = await this.prisma.notification.findFirst({
-      where: { OR: [{ userId }, { userId: null }], id: notifId },
+      where: { OR: [{ receiverId }, { receiverId: null }], id: notifId },
     });
 
     if (!notification) {
@@ -110,7 +122,7 @@ export class NotificationService {
     }
 
     const notificationRead = await this.prisma.notificationRead.findFirst({
-      where: { userId, notificationId: notifId },
+      where: { userId: receiverId, notificationId: notifId },
     });
 
     if (notificationRead) {
@@ -118,7 +130,7 @@ export class NotificationService {
     }
 
     await this.prisma.notificationRead.create({
-      data: { userId, notificationId: notifId },
+      data: { userId: receiverId, notificationId: notifId },
     });
 
     return {
