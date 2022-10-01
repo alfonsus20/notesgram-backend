@@ -100,7 +100,7 @@ export class NoteService {
               title: 'Notesgram',
               body: `${currentUserInfo.username} baru saja membeli catatan Anda`,
             },
-            'COMMENT',
+            'INFO',
             { noteId: newPurchase.noteId, creatorId: currentUserInfo.id },
           );
 

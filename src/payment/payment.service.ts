@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@prisma/client';
+import { NotificationService } from '../notification/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { PaymentCallbackDto, WithdrawCallbackDto, WithdrawDto } from './dto';
 import { TopupCoinDto } from './dto/topup-coin.dto';
@@ -13,9 +14,10 @@ export class PaymentService {
   private headers: { 'X-Api-Key': string; 'X-Oy-Username': string };
 
   constructor(
-    private httpService: HttpService,
-    private config: ConfigService,
-    private prismaService: PrismaService,
+    private readonly httpService: HttpService,
+    private readonly config: ConfigService,
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
   ) {
     this.oyBaseURL = this.config.get<string>('OY_BASE_URL');
     this.headers = {
@@ -41,15 +43,10 @@ export class PaymentService {
           data: { coins: user.coins + amount },
         });
       });
-      // kirim notif
     } else if (dto.status === 'waiting_payment') {
       status = PaymentStatus.WAITING;
-
-      // kirim notif
     } else {
       status = PaymentStatus.FAILED;
-
-      // kirim notif
     }
 
     const transaction = await this.prismaService.topupTransaction.update({
@@ -57,7 +54,21 @@ export class PaymentService {
       data: { status, payment_method: dto.payment_method },
     });
 
-    console.log({ transaction });
+    await this.notificationService.sendNotifToSpecificUser(
+      transaction.userId,
+      {
+        title: 'Notesgram',
+        body: `Topup coin sebesar ${transaction.amount} ${
+          transaction.status === PaymentStatus.SUCCESS
+            ? 'telah berhasil'
+            : transaction.status === PaymentStatus.WAITING
+            ? 'berstatus pending'
+            : 'gagal'
+        }`,
+      },
+      'TOPUP',
+      { creatorId: transaction.userId, topupId: transaction.id },
+    );
   }
 
   async topupCoin(user: User, dto: TopupCoinDto) {
@@ -159,10 +170,8 @@ export class PaymentService {
 
     if (dto.status.code === '000') {
       status = WithdrawalStatus.SUCCESS;
-      // kirim notif
     } else {
       status = WithdrawalStatus.FAILED;
-      // kirim notif
     }
 
     const transaction = await this.prismaService.withdrawalTransaction.update({
@@ -171,6 +180,20 @@ export class PaymentService {
         status,
       },
     });
+
+    await this.notificationService.sendNotifToSpecificUser(
+      transaction.userId,
+      {
+        title: 'Notesgram',
+        body: `Pencairan coin sebesar ${transaction.amount} ${
+          transaction.status === PaymentStatus.SUCCESS
+            ? 'telah berhasil'
+            : 'gagal'
+        }`,
+      },
+      'WITHDRAWAL',
+      { creatorId: transaction.userId, withdrawalId: transaction.id },
+    );
 
     console.log({ transaction });
   }
