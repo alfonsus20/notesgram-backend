@@ -229,6 +229,7 @@ export class PostService {
     try {
       const postToComment = await this.prisma.post.findUnique({
         where: { id: postId },
+        include: { user: true },
       });
 
       if (!postToComment) {
@@ -238,6 +239,16 @@ export class PostService {
       const comment = await this.prisma.postComment.create({
         data: { commenterId: userId, postId, comment: dto.comment },
       });
+
+      await this.notificationService.sendNotifToSpecificUser(
+        postToComment.user.id,
+        {
+          title: 'Notesgram',
+          body: `${postToComment.user.username} mengomentari postingan Anda`,
+        },
+        'COMMENT',
+        { postId },
+      );
 
       return {
         statusCode: HttpStatus.CREATED,
