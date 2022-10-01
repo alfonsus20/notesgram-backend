@@ -1,5 +1,6 @@
-import { Controller, Query, Get, UseGuards } from '@nestjs/common';
-import { FirebaseGuard } from '../auth/guard';
+import { Controller, Query, Get, UseGuards, Post, Body } from '@nestjs/common';
+import { AdminGuard, FirebaseGuard } from '../auth/guard';
+import { CreatePromoDto } from './dto';
 import { PromoService } from './promo.service';
 
 @UseGuards(FirebaseGuard)
@@ -14,5 +15,11 @@ export class PromoController {
   @Get('validate')
   validatePromoCode(@Query('code') code: string) {
     return this.promoService.validatePromoCode(code);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('create')
+  createPromoCode(@Body() dto: CreatePromoDto) {
+    return this.promoService.createPromoCode(dto);
   }
 }

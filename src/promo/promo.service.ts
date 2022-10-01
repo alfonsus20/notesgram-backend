@@ -4,11 +4,16 @@ import {
   BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
+import { NotificationService } from '../notification/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreatePromoDto } from './dto';
 
 @Injectable()
 export class PromoService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async getAllPromoCodes() {
     try {
@@ -48,6 +53,29 @@ export class PromoService {
         statusCode: HttpStatus.OK,
         data: { is_valid: true, promo },
         message: 'Promo is valid',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createPromoCode(dto: CreatePromoDto) {
+    try {
+      const promo = await this.prismaService.promoCode.create({ data: dto });
+
+      await this.notificationService.sendGlobalNotif(
+        {
+          title: 'Notesgram',
+          body: `Segera pakai kode promo ${promo.code} untuk membeli catatan yang Anda inginkan`,
+        },
+        'PROMO',
+        { promoId: promo.id },
+      );
+
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Success create promo code',
+        data: promo,
       };
     } catch (error) {
       throw error;

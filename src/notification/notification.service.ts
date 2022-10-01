@@ -57,24 +57,38 @@ export class NotificationService {
     }
   }
 
-  async sendGlobalNotif(info: NotificationInfo, type: NotificationCategory) {
+  async sendGlobalNotif(
+    info: NotificationInfo,
+    type: NotificationCategory,
+    data: NotificationData,
+  ) {
     const notification = await this.prisma.notification.create({
       data: {
         title: info.title,
         body: info.body,
         category: type,
+        ...data,
       },
     });
 
-    await this.firebaseService.defaultApp.messaging().send({
-      notification: { title: info.title, body: info.body },
-      condition: '',
-    });
+    const userTokens = (
+      await this.prisma.user.findMany({
+        where: { fcm_token: { not: null } },
+        select: { fcm_token: true },
+      })
+    ).map((token) => token.fcm_token);
+
+    const firebaseResponse = await this.firebaseService.defaultApp
+      .messaging()
+      .sendMulticast({
+        notification: { title: info.title, body: info.body },
+        tokens: userTokens,
+      });
 
     return {
       statusCode: HttpStatus.OK,
       message: 'Success send notification to all users',
-      data: notification,
+      data: { notification, firebase_response: firebaseResponse },
     };
   }
 
