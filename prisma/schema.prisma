@@ -40,6 +40,7 @@ model User {
   NotificationRead      NotificationRead[]
   notification_created  Notification[]          @relation("notification_created")
   notification_received Notification[]          @relation("notification_received")
+  ChallengeClaim        ChallengeClaim[]
 
   @@map("users")
 }
@@ -308,4 +309,43 @@ model NotificationRead {
   notification Notification @relation(fields: [notificationId], references: [id])
 
   @@map("notification_read")
+}
+
+model Challenge {
+  id          Int               @id @default(autoincrement())
+  period      ChallengePeriod
+  category    ChallengeCategory
+  title       String
+  description String
+  endAt       DateTime          @db.Timestamptz(3)
+
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  ChallengeClaim ChallengeClaim[]
+
+  @@map("challenges")
+}
+
+model ChallengeClaim {
+  id          Int @id @default(autoincrement())
+  userId      Int
+  challengeId Int
+
+  user      User      @relation(fields: [userId], references: [id])
+  challenge Challenge @relation(fields: [challengeId], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@map("challenge_claim")
+}
+
+enum ChallengePeriod {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum ChallengeCategory {
+  COMMENT
+  LIKE
+  NOTE_SALE
 }
