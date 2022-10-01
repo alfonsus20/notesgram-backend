@@ -6,6 +6,16 @@ export class TransactionService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getTransactionHistory(userId: number) {
+    const challengeClaimTransactions = (
+      await this.prismaService.challengeClaim.findMany({
+        where: { userId },
+        include: { challenge: true },
+      })
+    ).map((transaction) => ({
+      info: transaction,
+      category: 'CHALLENGE_REWARD',
+    }));
+
     const notePurchasedTransactions = (
       await this.prismaService.notePurchase.findMany({
         where: { userId },
@@ -43,6 +53,7 @@ export class TransactionService {
       ...noteSoldTransaction,
       ...topUpTransaction,
       ...withDrawalTransaction,
+      ...challengeClaimTransactions,
     ].sort(
       (a, b) =>
         new Date(b.info.createdAt).getTime() -
