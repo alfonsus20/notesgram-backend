@@ -192,6 +192,7 @@ export class PostService {
 
       const postlike = await this.prisma.postLike.findFirst({
         where: { likerId: userId, postId },
+        include: { liker: true },
       });
 
       if (postlike) {
@@ -203,16 +204,19 @@ export class PostService {
         };
       }
 
-      await this.prisma.postLike.create({ data: { likerId: userId, postId } });
+      const newPostlike = await this.prisma.postLike.create({
+        data: { likerId: userId, postId },
+        include: { liker: true },
+      });
 
       await this.notificationService.sendNotifToSpecificUser(
-        postToLike.user.id,
+        postToLike.userId,
         {
           title: 'Notesgram',
-          body: `${postToLike.user.username} menyukai postingan Anda`,
+          body: `${newPostlike.liker.username} menyukai postingan Anda`,
         },
         'LIKE',
-        { postId },
+        { postId, creatorId: newPostlike.likerId },
       );
 
       return {
@@ -238,16 +242,17 @@ export class PostService {
 
       const comment = await this.prisma.postComment.create({
         data: { commenterId: userId, postId, comment: dto.comment },
+        include: { commenter: true },
       });
 
       await this.notificationService.sendNotifToSpecificUser(
-        postToComment.user.id,
+        postToComment.userId,
         {
           title: 'Notesgram',
-          body: `${postToComment.user.username} mengomentari postingan Anda`,
+          body: `${comment.commenter.username} mengomentari postingan Anda`,
         },
         'COMMENT',
-        { postId, creatorId: postToComment.user.id },
+        { postId, creatorId: comment.commenter.id },
       );
 
       return {

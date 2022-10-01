@@ -3,10 +3,14 @@ import { User } from '@prisma/client';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PurchaseNoteDto } from './dto';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class NoteService {
-  constructor(private prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async purchaseNote(user: User, dto: PurchaseNoteDto) {
     try {
@@ -89,6 +93,16 @@ export class NoteService {
               coins: true,
             },
           });
+
+          await this.notificationService.sendNotifToSpecificUser(
+            newPurchase.note.post.userId,
+            {
+              title: 'Notesgram',
+              body: `${currentUserInfo.username} baru saja membeli catatan Anda`,
+            },
+            'COMMENT',
+            { noteId: newPurchase.noteId, creatorId: currentUserInfo.id },
+          );
 
           return { newPurchase, currentUserInfo };
         });
