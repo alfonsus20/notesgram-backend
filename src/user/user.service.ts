@@ -4,12 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { NotificationService } from '../notification/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUsernameDto } from './dto';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
 
   async getUserProfile(loggedInUserId: number, userId: number) {
     const user = await this.prisma.user.findUnique({
@@ -171,7 +175,20 @@ export class UserService {
         };
       }
 
-      await this.prisma.follow.create({ data: { followerId, followingId } });
+      const newFollow = await this.prisma.follow.create({
+        data: { followerId, followingId },
+        include: { follower: true },
+      });
+      await this.notificationService.sendNotifToSpecificUser(
+        followingId,
+        {
+          title: 'Notesgram',
+          body: `${newFollow.follower.username} mulai mengikuti Anda`,
+        },
+        'FOLLOW',
+        { creatorId: followerId },
+      );
+
       return {
         statusCode: HttpStatus.OK,
         message: 'Berhasil follow',

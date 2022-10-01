@@ -247,7 +247,7 @@ export class PostService {
           body: `${postToComment.user.username} mengomentari postingan Anda`,
         },
         'COMMENT',
-        { postId },
+        { postId, creatorId: postToComment.user.id },
       );
 
       return {
