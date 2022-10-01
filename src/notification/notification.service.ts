@@ -37,8 +37,6 @@ export class NotificationService {
         },
       });
 
-      console.log({ token: user.fcm_token, info });
-
       const firebaseResponse = await this.firebaseService.defaultApp
         .messaging()
         .sendToDevice(user.fcm_token, {
@@ -46,6 +44,7 @@ export class NotificationService {
             ...info,
             icon: 'https://kcettakvwqchjfujgwao.supabase.co/storage/v1/object/public/images/favicon.png',
           },
+          data: { data: JSON.stringify(notification) },
         });
 
       return {

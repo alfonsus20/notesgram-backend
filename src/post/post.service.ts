@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { NotificationService } from '../notification/notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { UserService } from '../user/user.service';
@@ -15,6 +16,7 @@ export class PostService {
     private storageService: StorageService,
     private prisma: PrismaService,
     private userService: UserService,
+    private notificationService: NotificationService,
   ) {}
 
   async getPosts(userId: number) {
@@ -181,6 +183,7 @@ export class PostService {
     try {
       const postToLike = await this.prisma.post.findUnique({
         where: { id: postId },
+        include: { user: true },
       });
 
       if (!postToLike) {
@@ -202,9 +205,19 @@ export class PostService {
 
       await this.prisma.postLike.create({ data: { likerId: userId, postId } });
 
+      await this.notificationService.sendNotifToSpecificUser(
+        postToLike.user.id,
+        {
+          title: 'Notesgram',
+          body: `${postToLike.user.username} menyukai postingan Anda`,
+        },
+        'LIKE',
+        { postId },
+      );
+
       return {
         statusCode: HttpStatus.OK,
-        message: 'Sukses like post',
+        message: 'Success like post',
         data: null,
       };
     } catch (error) {
