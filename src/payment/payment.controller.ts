@@ -3,7 +3,7 @@ import { Body } from '@nestjs/common/decorators';
 import { UseGuards } from '@nestjs/common/decorators/core/use-guards.decorator';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators';
-import { FirebaseGuard } from '../auth/guard';
+import { JwtGuard } from '../auth/guard';
 import {
   PaymentCallbackDto,
   TopupCoinDto,
@@ -16,7 +16,7 @@ import { PaymentService } from './payment.service';
 export class PaymentController {
   constructor(private paymentService: PaymentService) {}
 
-  @UseGuards(FirebaseGuard)
+  @UseGuards(JwtGuard)
   @Post('topup-coin')
   topupCoin(@GetUser() user: User, @Body() dto: TopupCoinDto) {
     return this.paymentService.topupCoin(user, dto);
@@ -27,7 +27,7 @@ export class PaymentController {
     this.paymentService.handleCallbackTopupCoin(dto);
   }
 
-  @UseGuards(FirebaseGuard)
+  @UseGuards(JwtGuard)
   @Post('withdraw')
   withDrawMoney(@GetUser() user: User, @Body() dto: WithdrawDto) {
     return this.paymentService.withDrawMoney(user, dto);

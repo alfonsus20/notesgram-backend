@@ -1,16 +1,19 @@
 import { Controller } from '@nestjs/common';
-import { Get, UseGuards } from '@nestjs/common/decorators';
+import { Body, Post } from '@nestjs/common/decorators';
 import { AuthService } from './auth.service';
-import { GetUser } from './decorators';
-import { FirebaseGuard } from './guard';
+import { LoginDto, RegisterDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(FirebaseGuard)
-  @Get('send-notification')
-  sendLoginNotif(@GetUser('id') userId: number) {
-    return this.authService.sendLoginNotif(userId);
+  @Post('login')
+  login(@Body() dto: LoginDto) {
+    return this.authService.login(dto);
+  }
+
+  @Post('register')
+  register(@Body() dto: RegisterDto) {
+    return this.authService.register(dto);
   }
 }

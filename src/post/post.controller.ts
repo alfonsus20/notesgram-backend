@@ -8,12 +8,12 @@ import {
 import { Get, Param, Query, UseGuards } from '@nestjs/common/decorators';
 import { AnyFilesInterceptor } from '@nestjs/platform-express/multer';
 import { GetUser } from '../auth/decorators';
-import { FirebaseGuard } from '../auth/guard';
+import { JwtGuard } from '../auth/guard';
 import { CommentPostDto, CreatePostDto } from './dto';
 import { PostService } from './post.service';
 
 @Controller('post')
-@UseGuards(FirebaseGuard)
+@UseGuards(JwtGuard)
 export class PostController {
   constructor(private postService: PostService) {}
 

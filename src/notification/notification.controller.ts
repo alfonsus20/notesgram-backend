@@ -1,9 +1,9 @@
 import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { GetUser } from '../auth/decorators';
-import { FirebaseGuard } from '../auth/guard';
+import { JwtGuard } from '../auth/guard';
 import { NotificationService } from './notification.service';
 
-@UseGuards(FirebaseGuard)
+@UseGuards(JwtGuard)
 @Controller('notification')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}

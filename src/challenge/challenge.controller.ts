@@ -2,11 +2,11 @@ import { Controller, Body, Post, Get } from '@nestjs/common';
 import { Param, UseGuards } from '@nestjs/common/decorators';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorators';
-import { AdminGuard, FirebaseGuard } from '../auth/guard';
+import { AdminGuard, JwtGuard } from '../auth/guard';
 import { ChallengeService } from './challenge.service';
 import { CreateChallengeDto } from './dto';
 
-@UseGuards(FirebaseGuard)
+@UseGuards(JwtGuard)
 @Controller('challenge')
 export class ChallengeController {
   constructor(private readonly challengeService: ChallengeService) {}

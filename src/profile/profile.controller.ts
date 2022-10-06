@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GetUser } from '../auth/decorators';
-import { FirebaseGuard } from '../auth/guard';
+import { JwtGuard } from '../auth/guard';
 import { EditProfileDto } from './dto';
 import { ProfileService } from './profile.service';
 
-@UseGuards(FirebaseGuard)
+@UseGuards(JwtGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}

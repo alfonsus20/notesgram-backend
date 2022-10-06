@@ -1,2 +1,2 @@
-export * from './firebase.guard';
 export * from './admin.guard';
+export * from './jwt.guard';

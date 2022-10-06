@@ -14,14 +14,14 @@ datasource db {
 model User {
   id Int @id @default(autoincrement())
 
-  email       String? @unique
-  name        String?
-  username    String? @unique
-  firebase_id String  @unique
-  avatar_url  String?
-  coins       Int     @default(0)
-  is_admin    Boolean @default(false)
-  fcm_token   String?
+  email      String? @unique
+  name       String?
+  username   String? @unique
+  password   String
+  avatar_url String?
+  coins      Int     @default(0)
+  is_admin   Boolean @default(false)
+  fcm_token  String?
 
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
