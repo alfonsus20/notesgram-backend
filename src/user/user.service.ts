@@ -34,6 +34,9 @@ export class UserService {
       .map((follower) => follower.followerId)
       .includes(loggedInUserId);
 
+    delete user.followers;
+    delete user.password;
+
     return {
       statusCode: HttpStatus.OK,
       message: 'Success get user profile',
