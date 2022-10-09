@@ -28,6 +28,12 @@ export class PostService {
         },
         bookmarks: { select: { bookmarkerId: true } },
         likes: { select: { likerId: true } },
+        _count: {
+          select: {
+            likes: true,
+            comments: true,
+          },
+        },
       },
     });
 
@@ -37,21 +43,28 @@ export class PostService {
       await this.userService.getUserFollowings(userId)
     ).data.map((following) => following.id);
 
-    const modifiedNotes = posts.map((post) => ({
-      ...post,
-      note: {
-        ...post.note,
-        is_purchased: purchasedNoteIds.includes(post.note.id),
-      },
-      user: {
-        ...post.user,
-        is_followed: followingUserIds.includes(post.user.id),
-      },
-      is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
-      is_bookmarked: post.bookmarks
-        .map((bookmark) => bookmark.bookmarkerId)
-        .includes(userId),
-    }));
+    const modifiedNotes = posts.map((post) => {
+      const structured = {
+        ...post,
+        note: {
+          ...post.note,
+          is_purchased: purchasedNoteIds.includes(post.note.id),
+        },
+        user: {
+          ...post.user,
+          is_followed: followingUserIds.includes(post.user.id),
+        },
+        is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
+        is_bookmarked: post.bookmarks
+          .map((bookmark) => bookmark.bookmarkerId)
+          .includes(userId),
+      };
+
+      delete structured.likes;
+      delete structured.bookmarks;
+
+      return structured;
+    });
 
     return {
       statusCode: HttpStatus.OK,

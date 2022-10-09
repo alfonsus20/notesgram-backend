@@ -40,13 +40,19 @@ export class TransactionService {
 
     const topUpTransaction = (
       await this.prismaService.topupTransaction.findMany({ where: { userId } })
-    ).map((transaction) => ({ info: transaction, category: 'TOPUP' }));
+    ).map((transaction) => ({
+      info: { ...transaction, id: transaction.id.toString() },
+      category: 'TOPUP',
+    }));
 
     const withDrawalTransaction = (
       await this.prismaService.withdrawalTransaction.findMany({
         where: { userId },
       })
-    ).map((transaction) => ({ info: transaction, category: 'WITHDRAWAL' }));
+    ).map((transaction) => ({
+      info: { ...transaction, id: transaction.id.toString() },
+      category: 'WITHDRAWAL',
+    }));
 
     const modified = [
       ...notePurchasedTransactions,
