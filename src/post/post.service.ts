@@ -54,7 +54,7 @@ export class PostService {
           ...post.user,
           is_followed: followingUserIds.includes(post.user.id),
         },
-        is_liked: post.likes.map((liker) => liker.likerId).includes(userId),
+        is_liked: post.likes.map((like) => like.likerId).includes(userId),
         is_bookmarked: post.bookmarks
           .map((bookmark) => bookmark.bookmarkerId)
           .includes(userId),
@@ -282,6 +282,10 @@ export class PostService {
     try {
       const notes = await this.prisma.note.findMany({
         where: { title: { contains: noteTitle, mode: 'insensitive' } },
+        include: {
+          post: { include: { user: { select: { id: true, username: true } } } },
+          note_pictures: true,
+        },
       });
 
       const users = await this.prisma.user.findMany({
