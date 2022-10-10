@@ -166,6 +166,7 @@ export class NoteService {
                   username: true,
                   avatar_url: true,
                   name: true,
+                  followers: true,
                 },
               },
               comments: {
@@ -209,6 +210,10 @@ export class NoteService {
 
       note['is_purchased'] = note.purchases
         .map((purchase) => purchase.userId)
+        .includes(userId);
+
+      note.post.user['is_followed'] = note.post.user.followers
+        .map((follower) => follower.followerId)
         .includes(userId);
 
       return {

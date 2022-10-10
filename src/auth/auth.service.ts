@@ -102,4 +102,21 @@ export class AuthService {
 
     return token;
   }
+
+  async logout(userId: number) {
+    try {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { fcm_token: null },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Success logout',
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
