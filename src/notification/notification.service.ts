@@ -42,7 +42,6 @@ export class NotificationService {
         .sendToDevice(user.fcm_token, {
           notification: {
             ...info,
-            icon: 'https://kcettakvwqchjfujgwao.supabase.co/storage/v1/object/public/images/favicon.png',
           },
           data: { data: JSON.stringify(notification) },
         });
