@@ -12,7 +12,7 @@ export class TransactionService {
         include: { challenge: true },
       })
     ).map((transaction) => ({
-      info: transaction,
+      info: { ...transaction, id: transaction.id.toString() },
       category: 'CHALLENGE_REWARD',
     }));
 
@@ -25,7 +25,10 @@ export class TransactionService {
           },
         },
       })
-    ).map((transaction) => ({ info: transaction, category: 'NOTE_PURCHASED' }));
+    ).map((transaction) => ({
+      info: { ...transaction, id: transaction.id.toString() },
+      category: 'NOTE_PURCHASED',
+    }));
 
     const noteSoldTransaction = (
       await this.prismaService.notePurchase.findMany({
@@ -36,7 +39,10 @@ export class TransactionService {
           },
         },
       })
-    ).map((transaction) => ({ info: transaction, category: 'NOTE_SOLD' }));
+    ).map((transaction) => ({
+      info: { ...transaction, id: transaction.id.toString() },
+      category: 'NOTE_SOLD',
+    }));
 
     const topUpTransaction = (
       await this.prismaService.topupTransaction.findMany({ where: { userId } })

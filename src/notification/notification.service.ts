@@ -26,17 +26,17 @@ export class NotificationService {
       where: { id: receiverId },
     });
 
-    if (user.fcm_token) {
-      const notification = await this.prisma.notification.create({
-        data: {
-          title: info.title,
-          body: info.body,
-          category: type,
-          receiverId,
-          ...data,
-        },
-      });
+    const notification = await this.prisma.notification.create({
+      data: {
+        title: info.title,
+        body: info.body,
+        category: type,
+        receiverId,
+        ...data,
+      },
+    });
 
+    if (user.fcm_token) {
       const firebaseResponse = await this.firebaseService.defaultApp
         .messaging()
         .sendToDevice(user.fcm_token, {
@@ -51,9 +51,13 @@ export class NotificationService {
         message: 'Success send notification to specific user',
         data: { notification, firebase_response: firebaseResponse },
       };
-    } else {
-      throw new BadRequestException('FCM token is required');
     }
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Success send notification to specific user without FCM',
+      data: { notification, firebase_response: null },
+    };
   }
 
   async sendGlobalNotif(
@@ -96,7 +100,16 @@ export class NotificationService {
       where: { OR: [{ receiverId }, { receiverId: null }] },
       include: {
         NotificationRead: true,
-        creator: true,
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            email: true,
+            avatar_url: true,
+            coins: true,
+          },
+        },
         post: true,
         note: true,
         topup: true,
