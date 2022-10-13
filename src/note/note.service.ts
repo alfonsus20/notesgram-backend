@@ -181,6 +181,7 @@ export class NoteService {
                       avatar_url: true,
                     },
                   },
+                  createdAt: true,
                 },
               },
               _count: {
